@@ -49,7 +49,7 @@ def admin_create_user():
 
         # create their corresponding folder in AWS S3
         bucket = Config.S3_BUCKET
-        folder_name = f"{resp["User"]["Username"]}/"
+        folder_name = f"{resp['User']['Username']}/"
 
         s3_client.put_object(
             Bucket=bucket,
