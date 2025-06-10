@@ -1,0 +1,20 @@
+@import "tailwindcss";
+
+@theme {
+    --color-primary: #0066B1;
+    --color-primary-hover: #3385c1;
+    --color-primary-100: #cce0ef;
+
+    /* --color-secondary: #1e6c93; */
+    --color-secondary: #D32F2F;
+
+    --container-8xl: 88rem;
+}
+
+body {
+    overflow-x: hidden;
+}
+
+.max-w-8xl {
+  max-width: var(--container-8xl);
+}

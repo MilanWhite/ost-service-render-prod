@@ -1,0 +1,25 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-ostserviceamplify-dev-c36c0-authRole",
+      "UnauthRoleArn": "arn:aws:iam::650251704033:role/amplify-ostserviceamplify-dev-c36c0-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::650251704033:role/amplify-ostserviceamplify-dev-c36c0-authRole",
+      "Region": "us-east-2",
+      "DeploymentBucketName": "amplify-ostserviceamplify-dev-c36c0-deployment",
+      "UnauthRoleName": "amplify-ostserviceamplify-dev-c36c0-unauthRole",
+      "StackName": "amplify-ostserviceamplify-dev-c36c0",
+      "StackId": "arn:aws:cloudformation:us-east-2:650251704033:stack/amplify-ostserviceamplify-dev-c36c0/1433a2e0-3a6d-11f0-beb3-06b1177abda5",
+      "AmplifyAppId": "d1qmjro48x0gcj"
+    },
+    "categories": {
+      "auth": {
+        "ostserviceamplify955083a8": {
+          "userPoolId": "us-east-2_eWDnB2NvW",
+          "userPoolName": "OSTServicesPortalPool",
+          "webClientId": "1hp2e6343bgghrivb0mm1pd12g",
+          "nativeClientId": "1hp2e6343bgghrivb0mm1pd12g"
+        }
+      }
+    }
+  }
+}
