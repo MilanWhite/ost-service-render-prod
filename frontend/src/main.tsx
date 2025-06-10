@@ -8,9 +8,8 @@ import {
 } from "react-router-dom";
 
 import { Authenticator } from "@aws-amplify/ui-react";
-import { Amplify } from 'aws-amplify';
-import config from './amplifyconfiguration.json';
-
+import { Amplify } from "aws-amplify";
+import config from "./amplifyconfiguration.json";
 
 import { LoginPage } from "../pages/general/AuthPages/LoginPage.tsx";
 import { ResetPasswordPage } from "../pages/general/AuthPages/ResetPasswordPage.tsx";
@@ -40,7 +39,7 @@ import { URLS } from "./config/navigation.ts";
 
 import { abortAllRequests } from "../services/api-client.ts";
 
-import "./i18.ts"
+import "./i18.ts";
 
 Amplify.configure(config);
 
@@ -130,9 +129,7 @@ const router = createBrowserRouter([
             },
 
             {
-                path: URLS.regularUserViewUserSingularVehicle(
-                    ":vehicle_id"
-                ),
+                path: URLS.regularUserViewUserSingularVehicle(":vehicle_id"),
                 element: (
                     <RegularRoute>
                         <RegularUserViewUserSingularVehicle />
@@ -190,9 +187,7 @@ const router = createBrowserRouter([
 ]);
 
 createRoot(document.getElementById("root")!).render(
-    <StrictMode>
-        <Authenticator.Provider>
-                <RouterProvider router={router} />
-        </Authenticator.Provider>
-    </StrictMode>
+    <Authenticator.Provider>
+        <RouterProvider router={router} />
+    </Authenticator.Provider>
 );
