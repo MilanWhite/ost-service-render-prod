@@ -58,6 +58,8 @@ def create_app():
     app.register_blueprint(main_bp, url_prefix="/api/main")
 
     with app.app_context():
+        db.create_all()
+
         print("\n–– Registered Blueprints ––")
         for name, bp in app.blueprints.items():
             print(f"{name!r} → prefix={bp.url_prefix}")
