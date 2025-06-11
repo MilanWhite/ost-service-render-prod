@@ -74,17 +74,49 @@ def admin_create_user():
 
 @admin_bp.route("/users/<string:sub>/delete-user", methods=["POST"])
 @cognito_auth_required(["Admin"])
-def admin_delete_user(sub):
+def admin_delete_user(sub: str):
     try:
         user = User.query.get(sub)
-
         if user is None:
-            return error_response(message="User not found", code=404)
+            return error_response("User not found", 404)
 
-        cognito_client.admin_delete_user(
-            UserPoolId=Config.USER_POOL_ID,
-            Username=sub,
-        )
+        try:
+            cognito_client.admin_delete_user(
+                UserPoolId=Config.USER_POOL_ID,
+                Username=sub,
+            )
+        except cognito_client.exceptions.UserNotFoundException:
+            pass
+
+        prefix = f"{sub}/"
+        continuation_token = None
+
+        while True:
+            list_kwargs = {
+                "Bucket": Config.S3_BUCKET,
+                "Prefix": prefix,
+                "MaxKeys": 1000,
+            }
+            if continuation_token:
+                list_kwargs["ContinuationToken"] = continuation_token
+
+            resp = s3_client.list_objects_v2(**list_kwargs)
+            contents = resp.get("Contents", [])
+
+            if not contents:
+                break
+
+            delete_keys = [{"Key": obj["Key"]} for obj in contents]
+
+            s3_client.delete_objects(
+                Bucket=Config.S3_BUCKET,
+                Delete={"Objects": delete_keys, "Quiet": True},
+            )
+
+            if resp.get("IsTruncated"):
+                continuation_token = resp["NextContinuationToken"]
+            else:
+                break
 
         db.session.delete(user)
         db.session.commit()
@@ -92,9 +124,9 @@ def admin_delete_user(sub):
         return success_response()
 
     except Exception as e:
-        print(str(e))
         db.session.rollback()
-        return error_response(message="Internal Server Error", code=500)
+        print("admin_delete_user error:", e)
+        return error_response("Internal Server Error", 500)
 
 @admin_bp.route("/users/get-all-users", methods=["GET"])
 @cognito_auth_required(["Admin"])
