@@ -60,15 +60,4 @@ def create_app():
     with app.app_context():
         db.create_all()
 
-        print("\n–– Registered Blueprints ––")
-        for name, bp in app.blueprints.items():
-            print(f"{name!r} → prefix={bp.url_prefix}")
-        print("–––––––––––––––––––––––––––\n")
-
-        print("\n–– URL Map ––")
-        for rule in app.url_map.iter_rules():
-            methods = ",".join(sorted(rule.methods - {"HEAD","OPTIONS"}))
-            print(f"{rule.rule:<30s} → methods[{methods}]")
-        print("–––––––––––––––––––––––––––\n")
-
     return app

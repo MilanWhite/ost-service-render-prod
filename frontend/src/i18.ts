@@ -301,9 +301,14 @@ i18n.use(LanguageDetector)
                         view_bill_of_landing: "View Bill of Landing",
 
                         // Delete vehicle dialog
-                        delete_vehicle: "Delete vehicle",
-                        delete_description:
+                        delete_vehicle: "Delete Vehicle",
+                        delete_vehicle_description:
                             "Are you sure you want to delete this vehicle? This vehicle will be permanently removed from our servers forever. This action cannot be undone.",
+
+                        // Delete user dialog
+                        delete_user: "Delete User",
+                        delete_user_description:
+                            "Are you sure you want to delete this user? This user account will be permanently removed from our servers forever. This action cannot be undone.",
 
                         // Edit buttons
                         edit: "Edit",
@@ -386,6 +391,8 @@ i18n.use(LanguageDetector)
                                 "Failed to load vehicles. Please try again later.",
                             failed_to_load_dashboard:
                                 "Failed to load dashboard. Please try again later.",
+                            failed_to_delete_user:
+                                "Failed to delete user. Please try again later.",
 
                             no_images_available: "No images available",
                         },
@@ -671,6 +678,11 @@ i18n.use(LanguageDetector)
                         delete_description:
                             "Вы уверены, что хотите удалить этот автомобиль? Он будет безвозвратно удалён с наших серверов. Это действие нельзя отменить.",
 
+                        // Delete user dialog
+                        delete_user: "Удалить пользователя",
+                        delete_user_description:
+                            "Вы уверены, что хотите удалить этого пользователя? Аккаунт будет безвозвратно удалён с наших серверов. Это действие нельзя отменить.",
+
                         // Edit buttons
                         edit: "Редактировать",
                         vehicle_info: "Информация об автомобиле",
@@ -755,6 +767,8 @@ i18n.use(LanguageDetector)
                                 "Не удалось загрузить автомобили. Попробуйте позже.",
                             failed_to_load_dashboard:
                                 "Не удалось загрузить панель. Попробуйте позже.",
+                            failed_to_delete_user:
+                                "Не удалось удалить пользователя. Пожалуйста, попробуйте позже.",
 
                             no_images_available: "Изображения недоступны",
                         },
@@ -1039,6 +1053,11 @@ i18n.use(LanguageDetector)
                         delete_description:
                             "Ви впевнені, що хочете видалити це авто? Його буде остаточно видалено з наших серверів. Цю дію не можна скасувати.",
 
+                        // Delete user dialog
+                        delete_user: "Видалити користувача",
+                        delete_user_description:
+                            "Ви впевнені, що хочете видалити цього користувача? Акаунт буде остаточно видалений з наших серверів. Цю дію не можна скасувати.",
+
                         // Edit buttons
                         edit: "Редагувати",
                         vehicle_info: "Інформація про авто",
@@ -1123,6 +1142,8 @@ i18n.use(LanguageDetector)
                                 "Не вдалося завантажити список авто. Спробуйте пізніше.",
                             failed_to_load_dashboard:
                                 "Не вдалося завантажити панель. Спробуйте пізніше.",
+                            failed_to_delete_user:
+                                "Не вдалося видалити користувача. Спробуйте пізніше.",
 
                             no_images_available: "Зображення недоступні",
                         },

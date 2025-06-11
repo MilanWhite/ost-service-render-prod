@@ -72,6 +72,29 @@ def admin_create_user():
         print(str(e))
         return error_response(message="Internal Server Error", code=500)
 
+@admin_bp.route("/users/<string:sub>/delete-user", methods=["POST"])
+@cognito_auth_required(["Admin"])
+def admin_delete_user(sub):
+    try:
+        user = User.query.get(sub)
+
+        if user is None:
+            return error_response(message="User not found", code=404)
+
+        cognito_client.admin_delete_user(
+            UserPoolId=Config.USER_POOL_ID,
+            Username=sub,
+        )
+
+        db.session.delete(user)
+        db.session.commit()
+
+        return success_response()
+
+    except Exception as e:
+        print(str(e))
+        db.session.rollback()
+        return error_response(message="Internal Server Error", code=500)
 
 @admin_bp.route("/users/get-all-users", methods=["GET"])
 @cognito_auth_required(["Admin"])

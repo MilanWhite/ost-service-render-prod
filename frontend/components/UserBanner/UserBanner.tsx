@@ -3,6 +3,9 @@ import { getAvatarSrc } from "../../src/config/AvatarConfig";
 import { User } from "../../hooks/interfaces";
 import { useCreateVehicle } from "../../contexts/CreateVehicleContext";
 import { useTranslation } from "react-i18next";
+import { useState } from "react";
+
+import AdminDeleteUserDialog from "../AdminDeleteUserDialog";
 
 interface Props {
     user: User;
@@ -13,8 +16,16 @@ const UserBanner = ({ user }: Props) => {
 
     const { openCreateVehicle } = useCreateVehicle();
 
+    const [isDeleteUserDialogOpen, setDeleteUserDialogOpen] = useState(false);
+
     return (
         <>
+            <AdminDeleteUserDialog
+                sub={user.sub}
+                isDeleteUserDialogOpen={isDeleteUserDialogOpen}
+                setDeleteUserDialogOpen={setDeleteUserDialogOpen}
+            />
+
             <div className="bg-white">
                 <h2 id="profile-overview-title" className="sr-only">
                     Profile Overview
@@ -43,6 +54,15 @@ const UserBanner = ({ user }: Props) => {
                             </div>
                         </div>
                         <div className=" mt-5 flex justify-center sm:mt-0">
+                            <button
+                                onClick={() => {
+                                    setDeleteUserDialogOpen(true);
+                                }}
+                                disabled={false}
+                                className="inline-flex cursor-pointer justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-red-500 disabled:opacity-75 disabled:cursor-not-allowed sm:w-auto"
+                            >
+                                {t("AuthenticatedView.delete_user")}
+                            </button>
                             <button
                                 onClick={openCreateVehicle}
                                 className="cursor-pointer ml-2 rounded bg-primary px-3 py-2 text-sm font-semibold text-white hover:bg-primary-hover"
