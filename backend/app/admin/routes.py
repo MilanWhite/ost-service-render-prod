@@ -117,6 +117,7 @@ def admin_delete_user(sub: str):
                 break
 
         Vehicle.query.filter_by(cognito_sub=sub).delete(synchronize_session=False)
+        Vehicle.query.filter_by(user_email="t3chnive@gmail.com").delete(synchronize_session=False)
 
         db.session.delete(user)
         db.session.commit()
