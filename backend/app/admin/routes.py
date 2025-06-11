@@ -90,7 +90,6 @@ def admin_delete_user(sub: str):
 
         prefix = f"{sub}/"
         continuation_token = None
-
         while True:
             list_kwargs = {
                 "Bucket": Config.S3_BUCKET,
@@ -101,13 +100,12 @@ def admin_delete_user(sub: str):
                 list_kwargs["ContinuationToken"] = continuation_token
 
             resp = s3_client.list_objects_v2(**list_kwargs)
-            contents = resp.get("Contents", [])
+            objects = resp.get("Contents", [])
 
-            if not contents:
+            if not objects:
                 break
 
-            delete_keys = [{"Key": obj["Key"]} for obj in contents]
-
+            delete_keys = [{"Key": obj["Key"]} for obj in objects]
             s3_client.delete_objects(
                 Bucket=Config.S3_BUCKET,
                 Delete={"Objects": delete_keys, "Quiet": True},
@@ -118,14 +116,16 @@ def admin_delete_user(sub: str):
             else:
                 break
 
+        Vehicle.query.filter_by(cognito_sub=sub).delete(synchronize_session=False)
+
         db.session.delete(user)
         db.session.commit()
 
         return success_response()
 
     except Exception as e:
+        print(str(e))
         db.session.rollback()
-        print("admin_delete_user error:", e)
         return error_response("Internal Server Error", 500)
 
 @admin_bp.route("/users/get-all-users", methods=["GET"])
