@@ -86,7 +86,7 @@ const CreateVehicleForm = ({ user, vehicleRefetch }: Props) => {
     const [videos, setVideos] = useState<File[]>([]);
 
     const onSubmit = async (data: FormData) => {
-        if (!!images) {
+        if (images.length === 0) {
             setImageError("AuthenticatedView.Errors.image_required");
             return;
         }
