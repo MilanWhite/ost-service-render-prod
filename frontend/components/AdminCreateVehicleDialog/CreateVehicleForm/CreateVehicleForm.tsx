@@ -35,14 +35,14 @@ export const createVehicleSchema = z.object({
     priceDelivery: z
         .string()
         .trim()
-        .regex(/^\d+(\.\d{1,2})?$/, {
+        .regex(/^(?:\d+(?:\.\d{1,2})?)?$/, { // empty input is valid
             message: "AuthenticatedView.Errors.delivery_price_invalid",
         }),
 
     priceShipping: z
         .string()
         .trim()
-        .regex(/^\d+(\.\d{1,2})?$/, {
+        .regex(/^(?:\d+(?:\.\d{1,2})?)?$/, {
             message: "AuthenticatedView.Errors.shipping_price_invalid",
         }),
 
