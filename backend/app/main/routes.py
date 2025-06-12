@@ -14,33 +14,28 @@ def check_sub(user_groups, user_sub, sub):
     if "Admin" not in user_groups and sub != user_sub:
         return error_response(message="Forbidden", code=403)
 
-def get_vehicle_thumbnail(sub, vehicle_id):
+def get_vehicle_thumbnail(sub: str, vehicle_id: str) -> str | None:
 
-    try:
+    resp = s3_client.list_objects_v2(
+        Bucket=Config.S3_BUCKET,
+        Prefix=f"{sub}/{vehicle_id}/thumbnail/",
+        MaxKeys=1,
+    )
 
-        resp = s3_client.list_objects_v2(
-            Bucket=Config.S3_BUCKET,
-            Prefix=f"{sub}/{vehicle_id}/thumbnail/",
-            MaxKeys=1,
-        )
+    keys = [
+        obj["Key"]
+        for obj in resp.get("Contents", [])
+        if not obj["Key"].endswith("/")
+    ]
 
-        keys = [
-            obj["Key"]
-            for obj in resp.get("Contents", [])
-            if not obj["Key"].endswith("/")
-        ]
+    if not keys:
+        return None
 
-        url = s3_client.generate_presigned_url(
-                ClientMethod="get_object",
-                Params={"Bucket": Config.S3_BUCKET, "Key": keys[0]},
-                ExpiresIn=3600
-            )
-
-        return url
-
-    except Exception as e:
-        print(e)
-        return error_response(message=str(e), code=500)
+    return s3_client.generate_presigned_url(
+        ClientMethod="get_object",
+        Params={"Bucket": Config.S3_BUCKET, "Key": keys[0]},
+        ExpiresIn=3600,
+    )
 
 def get_all_vehicle_images(sub,vehicle_id):
 
