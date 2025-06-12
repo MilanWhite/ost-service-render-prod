@@ -30,7 +30,7 @@ def create_app():
     CORS(
         app,
         supports_credentials=True,
-        resources={r"/api/*": {"origins": [Config.FRONTEND_URL]}},
+        resources={r"/api/*": {"origins": Config.FRONTEND_URLS.split(",")}},
     )
 
     # Talisman

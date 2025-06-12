@@ -22,7 +22,7 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # Frontend (only allowed by CORS)
-    FRONTEND_URL = os.getenv("FRONTEND_URL")
+    FRONTEND_URLS = os.getenv("FRONTEND_URLS")
 
     DEFAULT_USER_GROUP = os.getenv("DEFAULT_USER_GROUP", "Users")
     S3_BUCKET          = os.getenv("S3_BUCKET")
@@ -49,7 +49,7 @@ class ProductionConfig(Config):
     # Must exist
     SECRET_KEY = os.environ["SECRET_KEY"]
     SQLALCHEMY_DATABASE_URI = os.environ["DATABASE_URL"]
-    FRONTEND_URL = os.environ["FRONTEND_URL"]
+    FRONTEND_URLS = os.environ["FRONTEND_URLS"]
 
     # Prefer HTTP
     PREFERRED_URL_SCHEME = "https"
