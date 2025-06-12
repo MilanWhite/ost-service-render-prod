@@ -70,7 +70,7 @@ def admin_create_user():
 
     except Exception as e:
         print(str(e))
-        return error_response(message="Internal Server Error", code=500)
+        return error_response(message=str(e), code=500)
 
 @admin_bp.route("/users/<string:sub>/delete-user", methods=["POST"])
 @cognito_auth_required(["Admin"])
@@ -126,7 +126,7 @@ def admin_delete_user(sub: str):
     except Exception as e:
         print(str(e))
         db.session.rollback()
-        return error_response("Internal Server Error", 500)
+        return error_response(message=str(e), code=500)
 
 @admin_bp.route("/users/get-all-users", methods=["GET"])
 @cognito_auth_required(["Admin"])
@@ -148,7 +148,7 @@ def admin_get_all_users():
 
     except Exception as e:
         print(str(e))
-        return error_response(message="Internal Server Error", code=500)
+        return error_response(message=str(e), code=500)
 
 
 @admin_bp.route("/users/<string:sub>/get-user", methods=["GET"])
@@ -170,7 +170,7 @@ def admin_get_specific_user(sub):
 
     except Exception as e:
         print(str(e))
-        return error_response(message="Internal Server Error", code=500)
+        return error_response(message=str(e), code=500)
 
 
 @admin_bp.route("/vehicles/edit/<int:vehicle_id>/<int:on_singular_vehicle_page>", methods=["PUT"])
@@ -378,7 +378,7 @@ def admin_create_vehicle(sub):
 
     except Exception as e:
         print(str(e))
-        return error_response(message="Internal Server Error", code=500)
+        return error_response(message=str(e), code=500)
 
 
 @admin_bp.route("/vehicles/<string:sub>/delete-vehicle/<int:vehicle_id>", methods=["POST"])
@@ -570,4 +570,4 @@ def admin_fetch_dashboard():
         })
 
     except Exception as e:
-        return error_response(message="Internal Server Error", code=500)
+        return error_response(message=str(e), code=500)
