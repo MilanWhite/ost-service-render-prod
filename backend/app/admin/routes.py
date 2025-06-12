@@ -268,19 +268,20 @@ def add_file(filename, key, file):
 def admin_create_vehicle(sub):
     try:
 
-        lot_number = request.form.get("lotNumber")
-        auction_name = request.form.get("auctionName")
-        location = request.form.get("location")
-        shipping_status = request.form.get("shippingStatus")
-        price_delivery = request.form.get("priceDelivery")
-        price_shipping = request.form.get("priceShipping")
-        vehicle_name = request.form.get("vehicleName")
+        lot_number = request.form.get("lotNumber") or ""
+        auction_name = request.form.get("auctionName") or ""
+        location = request.form.get("location") or ""
+        shipping_status = request.form.get("shippingStatus") or ""
+        vehicle_name = request.form.get("vehicleName") or ""
 
-        container_number = request.form.get("containerNumber")
-        delivery_address = request.form.get("deliveryAddress")
-        port_of_destination = request.form.get("portOfDestination")
-        port_of_origin = request.form.get("portOfOrigin")
-        receiver_id = request.form.get("receiverId")
+        container_number = request.form.get("containerNumber") or ""
+        delivery_address = request.form.get("deliveryAddress") or ""
+        port_of_destination = request.form.get("portOfDestination") or ""
+        port_of_origin = request.form.get("portOfOrigin") or ""
+        receiver_id = request.form.get("receiverId") or ""
+
+        price_delivery = float(request.form.get("priceDelivery") or 0)
+        price_shipping = float(request.form.get("priceShipping") or 0)
 
         user = User.query.filter_by(cognito_sub=sub).first()
         user_email = user.email

@@ -51,6 +51,7 @@ class Vehicle(db.Model):
     user_email          = db.Column(db.String(100), nullable=False)
     created_at          = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
+    # i should make these not nullable to keep up the style but i HATE migrations
     container_number    = db.Column(db.String(20))
     port_of_origin      = db.Column(db.String(100))
     port_of_destination = db.Column(db.String(100))

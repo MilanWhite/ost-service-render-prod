@@ -24,32 +24,17 @@ export const createVehicleSchema = z.object({
         .trim()
         .min(1, { message: "AuthenticatedView.Errors.vehicle_name_required" }),
 
-    lotNumber: z
-        .string()
-        .trim()
-        .min(1, { message: "AuthenticatedView.Errors.lot_number_required" }),
+    lotNumber: z.string().trim(),
 
-    auctionName: z
-        .string()
-        .trim()
-        .min(1, { message: "AuthenticatedView.Errors.auction_name_required" }),
+    auctionName: z.string().trim(),
 
-    location: z
-        .string()
-        .trim()
-        .min(1, { message: "AuthenticatedView.Errors.location_required" }),
+    location: z.string().trim(),
 
-    shippingStatus: z
-        .string()
-        .trim()
-        .min(1, {
-            message: "AuthenticatedView.Errors.shipping_status_required",
-        }),
+    shippingStatus: z.string().trim(),
 
     priceDelivery: z
         .string()
         .trim()
-        .min(1, { message: "AuthenticatedView.Errors.delivery_price_required" })
         .regex(/^\d+(\.\d{1,2})?$/, {
             message: "AuthenticatedView.Errors.delivery_price_invalid",
         }),
@@ -57,44 +42,19 @@ export const createVehicleSchema = z.object({
     priceShipping: z
         .string()
         .trim()
-        .min(1, { message: "AuthenticatedView.Errors.shipping_price_required" })
         .regex(/^\d+(\.\d{1,2})?$/, {
             message: "AuthenticatedView.Errors.shipping_price_invalid",
         }),
 
-    // new fields
-    deliveryAddress: z
-        .string()
-        .trim()
-        .min(1, {
-            message: "AuthenticatedView.Errors.delivery_address_required",
-        }),
+    deliveryAddress: z.string().trim(),
 
-    portOfOrigin: z
-        .string()
-        .trim()
-        .min(1, {
-            message: "AuthenticatedView.Errors.port_of_origin_required",
-        }),
+    portOfOrigin: z.string().trim(),
 
-    portOfDestination: z
-        .string()
-        .trim()
-        .min(1, {
-            message: "AuthenticatedView.Errors.port_of_destination_required",
-        }),
+    portOfDestination: z.string().trim(),
 
-    containerNumber: z
-        .string()
-        .trim()
-        .min(1, {
-            message: "AuthenticatedView.Errors.container_number_required",
-        }),
+    containerNumber: z.string().trim(),
 
-    receiverId: z
-        .string()
-        .trim()
-        .min(1, { message: "AuthenticatedView.Errors.receiver_id_required" }),
+    receiverId: z.string().trim(),
 });
 
 type FormData = z.infer<typeof createVehicleSchema>;
@@ -323,10 +283,6 @@ const CreateVehicleForm = ({ user, vehicleRefetch }: Props) => {
                                     className="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-primary"
                                     {...register("lotNumber")}
                                 />
-                                <ErrorText>
-                                    {errors.lotNumber &&
-                                        t(errors.lotNumber.message as string)}
-                                </ErrorText>
                             </div>
                         </div>
                         <div className="sm:col-span-2">
@@ -344,10 +300,6 @@ const CreateVehicleForm = ({ user, vehicleRefetch }: Props) => {
                                     className="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-primary"
                                     {...register("auctionName")}
                                 />
-                                <ErrorText>
-                                    {errors.auctionName &&
-                                        t(errors.auctionName.message as string)}
-                                </ErrorText>
                             </div>
                         </div>
                         <div className="sm:col-span-2">
@@ -365,10 +317,6 @@ const CreateVehicleForm = ({ user, vehicleRefetch }: Props) => {
                                     className="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-primary"
                                     {...register("location")}
                                 />
-                                <ErrorText>
-                                    {errors.location &&
-                                        t(errors.location.message as string)}
-                                </ErrorText>
                             </div>
                         </div>
                         <div className="sm:col-span-2">
@@ -491,13 +439,6 @@ const CreateVehicleForm = ({ user, vehicleRefetch }: Props) => {
                                     className="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-primary"
                                     {...register("deliveryAddress")}
                                 />
-                                <ErrorText>
-                                    {errors.deliveryAddress &&
-                                        t(
-                                            errors.deliveryAddress
-                                                .message as string
-                                        )}
-                                </ErrorText>
                             </div>
                         </div>
                         <div className="sm:col-span-2 grid grid-cols-2 gap-x-6 gap-y-6 sm:grid-cols-6">
@@ -519,13 +460,6 @@ const CreateVehicleForm = ({ user, vehicleRefetch }: Props) => {
                                             {...register("portOfOrigin")}
                                         />
                                     </div>
-                                    <ErrorText>
-                                        {errors.portOfOrigin &&
-                                            t(
-                                                errors.portOfOrigin
-                                                    .message as string
-                                            )}
-                                    </ErrorText>
                                 </div>
                             </div>
 
@@ -547,13 +481,6 @@ const CreateVehicleForm = ({ user, vehicleRefetch }: Props) => {
                                             {...register("portOfDestination")}
                                         />
                                     </div>
-                                    <ErrorText>
-                                        {errors.portOfDestination &&
-                                            t(
-                                                errors.portOfDestination
-                                                    .message as string
-                                            )}
-                                    </ErrorText>
                                 </div>
                             </div>
                         </div>
@@ -576,13 +503,6 @@ const CreateVehicleForm = ({ user, vehicleRefetch }: Props) => {
                                             {...register("containerNumber")}
                                         />
                                     </div>
-                                    <ErrorText>
-                                        {errors.containerNumber &&
-                                            t(
-                                                errors.containerNumber
-                                                    .message as string
-                                            )}
-                                    </ErrorText>
                                 </div>
                             </div>
 
@@ -604,13 +524,6 @@ const CreateVehicleForm = ({ user, vehicleRefetch }: Props) => {
                                             {...register("receiverId")}
                                         />
                                     </div>
-                                    <ErrorText>
-                                        {errors.receiverId &&
-                                            t(
-                                                errors.receiverId
-                                                    .message as string
-                                            )}
-                                    </ErrorText>
                                 </div>
                             </div>
                         </div>
