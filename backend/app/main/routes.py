@@ -40,7 +40,7 @@ def get_vehicle_thumbnail(sub, vehicle_id):
 
     except Exception as e:
         print(e)
-        return error_response(message="Internal Server Error", code=500)
+        return error_response(message=str(e), code=500)
 
 def get_all_vehicle_images(sub,vehicle_id):
 
@@ -86,8 +86,8 @@ def get_all_vehicle_images(sub,vehicle_id):
         return img_urls, vid_urls
 
     except Exception as e:
-        print(e)
-        return error_response(message="Internal Server Error", code=500)
+        print(str(e))
+        return error_response(message=str(e), code=500)
 
 def get_vehicle_document(sub, vehicle_id, document_type):
     try:
@@ -115,7 +115,7 @@ def get_vehicle_document(sub, vehicle_id, document_type):
 
     except Exception as e:
         print(e)
-        return error_response(message="Internal Server Error", code=500)
+        return error_response(message=str(e), code=500)
 
 
 
@@ -188,7 +188,7 @@ def main_get_user_vehicles(sub):
 
     except Exception as e:
         print(f"[admin_get_user_vehicles] {e}")
-        return error_response(message="Internal Server Error", code=500)
+        return error_response(message=str(e), code=500)
 
 @main_bp.route("/<string:sub>/get-user", methods=["GET"])
 @cognito_auth_required(["Admin", "RegularUser"])
@@ -214,7 +214,7 @@ def main_get_user(sub):
 
     except Exception as e:
         print(str(e))
-        return error_response(message="Internal Server Error", code=500)
+        return error_response(message=str(e), code=500)
 
 
 @main_bp.route("/<string:sub>/vehicles/<string:vehicle_id>", methods=["GET"])
@@ -246,7 +246,7 @@ def main_get_specific_vehicle(sub,vehicle_id):
 
     except Exception as e:
         print(f"[main_get_user_vehicles] {e}")
-        return error_response(message="Internal Server Error", code=500)
+        return error_response(message=str(e), code=500)
 
 # user dashboard
 @main_bp.route("/dashboard", methods=["GET"])
@@ -333,4 +333,4 @@ def user_fetch_dashboard():
         })
 
     except Exception as e:
-        return error_response(message="Internal Server Error", code=500)
+        return error_response(message=str(e), code=500)
