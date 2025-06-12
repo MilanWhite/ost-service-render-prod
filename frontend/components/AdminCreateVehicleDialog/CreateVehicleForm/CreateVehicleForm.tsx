@@ -35,7 +35,8 @@ export const createVehicleSchema = z.object({
     priceDelivery: z
         .string()
         .trim()
-        .regex(/^(?:\d+(?:\.\d{1,2})?)?$/, { // empty input is valid
+        .regex(/^(?:\d+(?:\.\d{1,2})?)?$/, {
+            // empty input is valid
             message: "AuthenticatedView.Errors.delivery_price_invalid",
         }),
 
@@ -80,9 +81,17 @@ const CreateVehicleForm = ({ user, vehicleRefetch }: Props) => {
         useState<File | null>(null);
 
     const [images, setImages] = useState<File[]>([]);
+    const [imageError, setImageError] = useState<string | null>(null);
+
     const [videos, setVideos] = useState<File[]>([]);
 
     const onSubmit = async (data: FormData) => {
+        if (!!images) {
+            setImageError("AuthenticatedView.Errors.image_required");
+            return;
+        }
+        setImageError(null);
+
         const createVehicleInfo: CreateVehicleInfo = {
             lotNumber: data.lotNumber,
             auctionName: data.auctionName,
@@ -186,6 +195,9 @@ const CreateVehicleForm = ({ user, vehicleRefetch }: Props) => {
                                 onChange={handleImageUpload}
                                 className="block w-full text-sm text-gray-700"
                             />
+                            <ErrorText>
+                                {imageError && t(imageError as string)}
+                            </ErrorText>
                         </div>
 
                         {images.map((image, index) => (

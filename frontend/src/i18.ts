@@ -371,6 +371,8 @@ i18n.use(LanguageDetector)
                                 "Container number is required",
                             receiver_id_required: "Receiver ID is required",
 
+                            image_required: "At least one image upload is required",
+
                             failed_to_fetch_users:
                                 "Failed to fetch users. Please try again later.",
                             failed_to_send_message:
@@ -747,6 +749,8 @@ i18n.use(LanguageDetector)
                                 "Номер контейнера обязателен",
                             receiver_id_required: "ID получателя обязателен",
 
+                            image_required: "Необходимо загрузить как минимум одно изображение",
+
                             failed_to_fetch_users:
                                 "Не удалось получить список пользователей. Попробуйте позже.",
                             failed_to_send_message:
@@ -1121,6 +1125,8 @@ i18n.use(LanguageDetector)
                                 "Номер контейнера є обов’язковим",
                             receiver_id_required:
                                 "ID одержувача є обов’язковим",
+
+                            image_required: "Потрібно завантажити принаймні одне зображення",
 
                             failed_to_fetch_users:
                                 "Не вдалося завантажити користувачів. Спробуйте пізніше.",

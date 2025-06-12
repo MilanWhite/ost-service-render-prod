@@ -293,8 +293,8 @@ def admin_create_vehicle(sub):
         title_document = request.files.get("titleDocument")
         bill_of_landing_document = request.files.get("billOfLandingDocument")
 
-        if not all([lot_number, auction_name, location, shipping_status, vehicle_name, images]):
-            return error_response(message="Missing required field", code=400)
+        if not all([vehicle_name, images]):
+            return error_response(message="MissingFieldError", code=400)
 
         try:
             price_delivery = float(price_delivery) if price_delivery else None
