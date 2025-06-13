@@ -27,6 +27,7 @@ const AdminVehiclePage = ({ vehicle: initial }: Props) => {
         startEditing,
         cancelEditing,
         handleChange,
+        saveChanges,
     } = useEditVehicle(initial, true);
 
     // image editor states
@@ -68,24 +69,14 @@ const AdminVehiclePage = ({ vehicle: initial }: Props) => {
     const handleSave = async () => {
         setSaveError(null);
 
-        const form = new FormData();
-        form.append("payload", JSON.stringify(vehicle)); // JSON fields
-
-        toAdd.forEach((f) => form.append("new_images", f, f.name));
-        toDelete.forEach((url) => form.append("delete_keys[]", url));
-
         try {
-            await apiClient.put(
-                `/api/admin/vehicles/edit/${vehicle.id}/1`,
-                form,
-                { headers: { "Content-Type": "multipart/form-data" } }
-            );
+            await saveChanges({ newImages: toAdd, deleteKeys: toDelete });
 
-            // reload page to get new vehicle
             window.location.reload();
         } catch (err) {
-            if (!(err instanceof CanceledError))
-                setSaveError("AuthenticatedView.Errors.failed_to_edit_vehicle");
+            if (err instanceof CanceledError) return;
+
+            setSaveError("AuthenticatedView.Errors.failed_to_edit_vehicle");
         }
     };
 
