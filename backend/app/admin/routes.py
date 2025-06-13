@@ -368,11 +368,11 @@ def admin_create_vehicle(sub):
 
         # upload all images
         for image in images:
-            add_file(image.filename, f"{folder_prefix}/{image.filename}", image)
+            add_file(image.filename, f"{folder_prefix}/{image.filename.split("/")[-1]}", image)
 
         #upload all videos
         for video in videos:
-            add_file(video.filename, f"{folder_prefix}/videos/{video.filename}", video)
+            add_file(video.filename, f"{folder_prefix}/videos/{video.filename.split("/")[-1]}", video)
 
         # upload all documents
 
