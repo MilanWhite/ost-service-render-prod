@@ -87,7 +87,7 @@ const AdminDeleteVehicleDialog = ({
                                     <div className="mt-2">
                                         <p className="text-sm text-gray-500">
                                             {t(
-                                                "AuthenticatedView.delete_description"
+                                                "AuthenticatedView.delete_vehicle_description"
                                             )}
                                         </p>
                                     </div>

@@ -677,7 +677,7 @@ i18n.use(LanguageDetector)
 
                         // Delete vehicle dialog
                         delete_vehicle: "Удалить автомобиль",
-                        delete_description:
+                        delete_vehicle_description:
                             "Вы уверены, что хотите удалить этот автомобиль? Он будет безвозвратно удалён с наших серверов. Это действие нельзя отменить.",
 
                         // Delete user dialog
@@ -1054,7 +1054,7 @@ i18n.use(LanguageDetector)
 
                         // Delete vehicle dialog
                         delete_vehicle: "Видалити авто",
-                        delete_description:
+                        delete_vehicle_description:
                             "Ви впевнені, що хочете видалити це авто? Його буде остаточно видалено з наших серверів. Цю дію не можна скасувати.",
 
                         // Delete user dialog

@@ -12,7 +12,6 @@ from app.extensions import db
 from app.main.routes import get_all_vehicle_images, get_vehicle_thumbnail
 
 admin_bp = Blueprint('admin', __name__)
-# admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
 
 def get_extension(image):
     original_image_name = secure_filename(image.filename)
@@ -45,7 +44,6 @@ def admin_create_user():
             Username=email,
             GroupName=Config.DEFAULT_USER_GROUP
         )
-
 
         # create their corresponding folder in AWS S3
         bucket = Config.S3_BUCKET
@@ -287,6 +285,7 @@ def admin_create_vehicle(sub):
         user_email = user.email
 
         images = request.files.getlist("images")
+        thumbnail = request.files.get("thumbnail")
         videos = request.files.getlist("videos")
 
         bill_of_sale_document = request.files.get("billOfSaleDocument")
@@ -330,7 +329,10 @@ def admin_create_vehicle(sub):
 
         # create thumbnail
 
-        first_image = images[0]
+        if not thumbnail:
+            thumbnail = images[0]
+
+        first_image = thumbnail
 
         ext = get_extension(first_image)
 

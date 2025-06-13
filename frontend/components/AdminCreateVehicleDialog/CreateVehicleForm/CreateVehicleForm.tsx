@@ -18,6 +18,8 @@ import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import ZipImagePreview from "../../ZipImagePreviewer";
+
 export const createVehicleSchema = z.object({
     vehicleName: z
         .string()
@@ -80,16 +82,18 @@ const CreateVehicleForm = ({ user, vehicleRefetch }: Props) => {
     const [billOfLandingDocument, setBillOfLandingDocument] =
         useState<File | null>(null);
 
-    const [images, setImages] = useState<File[]>([]);
+    const [files, setFiles] = useState<File[]>([]);
+    const [thumbnail, setThumbnail] = useState<File | null>(null);
     const [imageError, setImageError] = useState<string | null>(null);
 
     const [videos, setVideos] = useState<File[]>([]);
 
     const onSubmit = async (data: FormData) => {
-        if (images.length === 0) {
+        if (files.length === 0) {
             setImageError("AuthenticatedView.Errors.image_required");
             return;
         }
+
         setImageError(null);
 
         const createVehicleInfo: CreateVehicleInfo = {
@@ -101,7 +105,6 @@ const CreateVehicleForm = ({ user, vehicleRefetch }: Props) => {
             priceShipping: data.priceShipping,
             vehicleName: data.vehicleName,
 
-            // new fields
             deliveryAddress: data.deliveryAddress,
             portOfOrigin: data.portOfOrigin,
             portOfDestination: data.portOfDestination,
@@ -110,7 +113,8 @@ const CreateVehicleForm = ({ user, vehicleRefetch }: Props) => {
         };
 
         const createVehicleMedia: CreateVehicleMedia = {
-            images: images,
+            images: files,
+            thumbnail: thumbnail,
             videos: videos,
             billOfSaleDocument: billOfSaleDocument,
             titleDocument: titleDocument,
@@ -122,13 +126,6 @@ const CreateVehicleForm = ({ user, vehicleRefetch }: Props) => {
             createVehicleMedia,
             vehicleRefetch
         );
-    };
-
-    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const image = e.target.files && e.target.files[0];
-        if (!image) return;
-        setImages([...images, image]);
-        e.target.value = "";
     };
 
     const handleVideoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -188,36 +185,17 @@ const CreateVehicleForm = ({ user, vehicleRefetch }: Props) => {
                             <label className="block mb-1 font-medium">
                                 {t("AuthenticatedView.upload_images")}
                             </label>
-                            <input
-                                type="file"
-                                accept="image/*"
-                                multiple
-                                onChange={handleImageUpload}
-                                className="block w-full text-sm text-gray-700"
+
+                            <ZipImagePreview
+                                files={files}
+                                setFiles={setFiles}
+                                thumbnail={thumbnail}
+                                setThumbnail={setThumbnail}
                             />
                             <ErrorText>
                                 {imageError && t(imageError as string)}
                             </ErrorText>
                         </div>
-
-                        {images.map((image, index) => (
-                            <div key={index} className="flex my-2">
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        setImages((prev) =>
-                                            prev.filter((_, i) => i !== index)
-                                        );
-                                    }}
-                                    className="cursor-pointer text-red-700"
-                                >
-                                    <XMarkIcon className="w-4" />
-                                </button>
-                                <p className="text-sm text-gray-700">
-                                    {image.name}
-                                </p>
-                            </div>
-                        ))}
                     </div>
 
                     <div className="mb-4">
