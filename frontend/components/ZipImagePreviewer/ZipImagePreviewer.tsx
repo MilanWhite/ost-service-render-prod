@@ -18,74 +18,105 @@ export default function ZipImagePreviewer({
     setThumbnail,
     disableThumbnailSelection = false,
 }: Props) {
+
     const { t } = useTranslation();
 
     const [urlMap, setUrlMap] = useState<Map<string, string>>(new Map());
     const key = (f: File) => f.name + f.lastModified;
     const dragIndex = useRef<number | null>(null);
-
-    // Add or unzip file
-    const handleSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    
+    // if a filename collides, append (n)
+    function makeUniqueName(
+        name: string,
+        existingNames: Set<string>
+    ): string {
+        const match = name.match(/^(.*?)(\.[^.]+)?$/)!;
+        const base = match[1];
+        const ext  = match[2] || "";
+        let candidate = name;
+        let i = 1;
+        while (existingNames.has(candidate)) {
+            candidate = `${base}(${i++})${ext}`;
+        }
+        existingNames.add(candidate.toLowerCase());
+        return candidate;
+    }
+    
+    // handle both image files and .zip uploads
+    const handleSelect = async (
+        e: React.ChangeEvent<HTMLInputElement>
+    ) => {
         const picked = e.target.files?.[0];
         if (!picked) return;
-
+    
+        // current names in state
+        const existing = new Set(files.map((f) => f.name.toLowerCase()));
         let incoming: File[] = [];
-
-        if (picked.name.endsWith(".zip")) {
+    
+        if (picked.name.toLowerCase().endsWith(".zip")) {
             const buf = await picked.arrayBuffer();
             const zip = await JSZip.loadAsync(buf);
-
+    
             await Promise.all(
                 Object.values(zip.files)
                     .filter(
                         (f) =>
                             !f.dir &&
-                            /\.(png|jf?if|jpe?g|gif|webp|bmp|svg)$/i.test(
-                                f.name
-                            )
+                            /\.(png|jpe?g|gif|webp|bmp|svg|heic|heif)$/i.test(f.name)
                     )
                     .map(async (entry) => {
                         const blob = await entry.async("blob");
+                        const rawName = entry.name.split("/").pop()!;
+                        const uniqueName = makeUniqueName(rawName, existing);
                         incoming.push(
-                            new File([blob], entry.name, { type: blob.type })
+                            new File([blob], uniqueName, { type: blob.type })
                         );
                     })
             );
-        } else if (/\.(png|jf?if|jpe?g|gif|webp|bmp|svg)$/i.test(picked.name)) {
-            incoming = [picked];
+        } else if (/\.(png|jpe?g|gif|webp|bmp|svg|heic|heif)$/i.test(picked.name)) {
+            // single image — rename if needed
+            const uniqueName = makeUniqueName(picked.name, existing);
+            incoming = [new File([picked], uniqueName, { type: picked.type })];
         } else {
-            alert("Unsupported file type.");
+            alert(t("Unsupported file type."));
             e.target.value = "";
             return;
         }
-
+    
+        // merge into state, set first as thumbnail if none
         setFiles((prev) => {
             const next = [...prev, ...incoming];
-            if (!thumbnail && next.length) setThumbnail(next[0]);
+            if (!thumbnail && next.length) {
+                setThumbnail(next[0]);
+            }
             return next;
         });
-
+    
         e.target.value = "";
     };
-
+    
+    // keep urlMap in sync with files
     useEffect(() => {
         const m = new Map<string, string>();
         files.forEach((f) => m.set(key(f), URL.createObjectURL(f)));
         setUrlMap(m);
         return () => m.forEach((u) => URL.revokeObjectURL(u));
     }, [files]);
-
+    
+    // remove one File from state
     const removeFile = (f: File) => {
         setFiles((prev) => {
             const next = prev.filter((x) => key(x) !== key(f));
-            if (thumbnail && key(thumbnail) === key(f))
+            if (thumbnail && key(thumbnail) === key(f)) {
                 setThumbnail(next[0] ?? null);
+            }
             return next;
         });
         const url = urlMap.get(key(f));
         if (url) URL.revokeObjectURL(url);
     };
-
+    
+    // reorder on drag/drop
     const reorder = (from: number, to: number) => {
         if (from === to) return;
         setFiles((prev) => {
