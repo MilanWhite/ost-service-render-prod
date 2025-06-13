@@ -21,7 +21,7 @@ export const VehicleFilterChoices = {
     port_of_origin: "AuthenticatedView.port_of_origin",
     port_of_destination: "AuthenticatedView.port_of_destination",
     delivery_address: "AuthenticatedView.delivery_address",
-    receiver_id: "AuthenticatedView.reciever_id",
+    receiver_id: "AuthenticatedView.receiver_id",
 }
 
 // export const VehicleFilterChoices = {

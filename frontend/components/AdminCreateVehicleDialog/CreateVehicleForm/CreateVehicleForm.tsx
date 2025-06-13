@@ -501,7 +501,7 @@ const CreateVehicleForm = ({ user, vehicleRefetch }: Props) => {
                                     htmlFor="receiverId"
                                     className="block text-sm/6 font-medium text-gray-900"
                                 >
-                                    {t("AuthenticatedView.reciever_id")}
+                                    {t("AuthenticatedView.receiver_id")}
                                 </label>
 
                                 <div className="mt-2">

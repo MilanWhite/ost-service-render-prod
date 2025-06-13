@@ -173,7 +173,7 @@ const UserVehiclePage = ({ vehicle }: Props) => {
                                 {/* Receiver ID */}
                                 <div>
                                     <p className="text-sm font-medium text-gray-700">
-                                        {t("AuthenticatedView.reciever_id")}
+                                        {t("AuthenticatedView.receiver_id")}
                                     </p>
                                     <p className="mt-1 text-gray-900">
                                         {vehicle?.receiver_id}
