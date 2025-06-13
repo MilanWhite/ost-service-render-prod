@@ -33,6 +33,11 @@ const AdminVehiclePage = ({ vehicle: initial }: Props) => {
     const [imageFiles, setImageFiles] = useState<File[]>([]);
     const [thumb] = useState<File | null>(null); // thumbnail picking disabled
 
+    const normName = (u: string) =>
+        decodeURIComponent(u.split("/").pop()!.split("?")[0])
+          .replace(/\+/g, " ")
+          .toLowerCase();
+
     // create vehicle File out of URL
     useEffect(() => {
         let cancelled = false;
@@ -46,12 +51,11 @@ const AdminVehiclePage = ({ vehicle: initial }: Props) => {
 
             // Fetch each URL; return null on error
             const filePromises = urls.map(async (rawUrl) => {
-                const [url] = rawUrl.split("?");
                 try {
                     const res = await fetch(rawUrl);
                     if (!res.ok) return null; //
                     const blob = await res.blob();
-                    const name = url.split("/").pop()!;
+                    const name = normName(rawUrl);
                     return new File([blob], name, { type: blob.type });
                 } catch {
                     return null; // network err etc.
@@ -73,10 +77,6 @@ const AdminVehiclePage = ({ vehicle: initial }: Props) => {
         };
     }, [initial.vehicleImages]);
 
-    const normName = (u: string) =>
-        decodeURIComponent(u.split("/").pop()!.split("?")[0])
-          .replace(/\+/g, " ")
-          .toLowerCase();
 
     // determine existing & deleted files
     const { toAdd, toDelete } = useMemo(() => {
@@ -303,7 +303,7 @@ const AdminVehiclePage = ({ vehicle: initial }: Props) => {
                                             />
                                         ) : (
                                             <p className="mt-1 text-gray-900">
-                                                {vehicle?.receiver_id}
+                                                {vehicle?.lot_number}
                                             </p>
                                         )}
                                     </div>
@@ -467,7 +467,7 @@ const AdminVehiclePage = ({ vehicle: initial }: Props) => {
                                     {/* Receiver ID */}
                                     <div>
                                         <p className="text-sm font-medium text-gray-700">
-                                            {t("AuthenticatedView.reciever_id")}
+                                            {t("AuthenticatedView.receiver_id")}
                                         </p>
                                         {isEditing ? (
                                             <input

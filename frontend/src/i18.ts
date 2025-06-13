@@ -292,7 +292,7 @@ i18n.use(LanguageDetector)
                         port_of_origin: "Port of Origin",
                         port_of_destination: "Port of Destination",
                         container_number: "Container Number",
-                        reciever_id: "Reciever Id",
+                        receiver_id: "Receiver Id",
 
                         // Documents
                         documents: "Documents",
@@ -670,7 +670,7 @@ i18n.use(LanguageDetector)
                         port_of_origin: "Порт отправления",
                         port_of_destination: "Порт назначения",
                         container_number: "Номер контейнера",
-                        reciever_id: "ID получателя",
+                        receiver_id: "ID получателя",
 
                         // Documents
                         documents: "Документы",
@@ -1050,7 +1050,7 @@ i18n.use(LanguageDetector)
                         port_of_origin: "Порт відправлення",
                         port_of_destination: "Порт призначення",
                         container_number: "Номер контейнера",
-                        reciever_id: "ID одержувача",
+                        receiver_id: "ID одержувача",
 
                         // Documents
                         documents: "Документи",
