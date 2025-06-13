@@ -89,9 +89,16 @@ const AdminVehiclePage = ({ vehicle: initial }: Props) => {
         const del = (initial.vehicleImages ?? []).filter(
           url => !imageFiles.some(f => normName(url) === normName(f.name))
         );
-      
+        
+        console.log(originalNames)
+        console.log(add)
+        console.log(del)
+
         return { toAdd: add, toDelete: del };
       }, [imageFiles, initial.vehicleImages]);
+
+
+
 
     const [saveError, setSaveError] = useState<string | null>(null);
 
