@@ -35,21 +35,53 @@ const AdminVehiclePage = ({ vehicle: initial }: Props) => {
 
     // create vehicle File out of URL
     useEffect(() => {
-        (async () => {
-            if (!initial.vehicleImages?.length) return;
+        let cancelled = false; // don’t set state if unmounted
 
-            const list: File[] = [];
-            await Promise.all(
-                initial.vehicleImages.map(async (url) => {
-                    const res = await fetch(url);
+        (async () => {
+            if (!initial.vehicleImages?.length) {
+                setImageFiles([]);
+                return;
+            }
+
+            const results = await Promise.allSettled(
+                initial.vehicleImages.map(async (rawUrl) => {
+                    // --- 1. Strip off the presign query so name looks like foo.jpg
+                    const [url] = rawUrl.split("?");
+                    const res = await fetch(rawUrl, { mode: "cors" });
+
+                    if (!res.ok) {
+                        // 403, 404, CORS failure → treat as “no image”
+                        throw new Error(`fetch ${url}: ${res.status}`);
+                    }
+
                     const blob = await res.blob();
-                    const name = url.split("/").pop()!;
-                    list.push(new File([blob], name, { type: blob.type }));
+                    const name = url.split("/").pop()!; // foo.jpg
+
+                    return new File([blob], name, { type: blob.type });
                 })
             );
-            setImageFiles(list);
+
+            // keep only successful fetches
+            const files: File[] = results
+                .filter(
+                    (r): r is PromiseFulfilledResult<File> =>
+                        r.status === "fulfilled"
+                )
+                .map((r) => r.value);
+
+            if (!cancelled) setImageFiles(files);
         })();
+
+        return () => {
+            cancelled = true;
+        };
     }, [initial.vehicleImages]);
+
+    console.log("VEHICLE");
+    console.log(vehicle);
+
+    console.log("imageFiles");
+    console.log(imageFiles);
 
     // determine existing & deleted files
     const { toAdd, toDelete } = useMemo(() => {

@@ -222,7 +222,7 @@ def admin_edit_vehicle_with_images(vehicle_id, on_singular_vehicle_page):
         s3_client.upload_fileobj(
             f,
             Config.S3_BUCKET,
-            f"{vehicle.cognito_sub}/{vehicle_id}/{f.filename}",
+            f"{vehicle.cognito_sub}/{vehicle_id}/edited_in_{f.filename}",
             ExtraArgs={"ContentType": f.mimetype},
         )
 
@@ -278,7 +278,7 @@ def admin_create_vehicle(sub):
         auction_name = request.form.get("auctionName") or ""
         location = request.form.get("location") or ""
         shipping_status = request.form.get("shippingStatus") or ""
-        vehicle_name = request.form.get("vehicleName") or ""
+        vehicle_name = request.form.get("vehicleName") or "Vehicle"
 
         container_number = request.form.get("containerNumber") or ""
         delivery_address = request.form.get("deliveryAddress") or ""
