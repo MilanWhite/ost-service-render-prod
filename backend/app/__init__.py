@@ -38,13 +38,14 @@ def create_app():
         "default-src": ["'self'"],
         "script-src": ["'self'"],
         "style-src": ["'self'", "'unsafe-inline'"],
-        "img-src": ["'self'", "data:"],
+        "img-src": ["'self'", "data:", "blob:"], # add blob to policy to allow for the Image Perviewer to work
     }
+
     Talisman(
         app,
         force_https=True,
         strict_transport_security=True,
-        strict_transport_security_max_age=31536000,
+        strict_transport_security_max_age=31_536_000,
         strict_transport_security_include_subdomains=True,
         frame_options="DENY",
         content_security_policy=csp,
