@@ -222,7 +222,7 @@ def admin_edit_vehicle_with_images(vehicle_id, on_singular_vehicle_page):
         s3_client.upload_fileobj(
             f,
             Config.S3_BUCKET,
-            f"{vehicle.cognito_sub}/{vehicle_id}/edited_in_{f.filename}",
+            f"{vehicle.cognito_sub}/{vehicle_id}/{f.filename}",
             ExtraArgs={"ContentType": f.mimetype},
         )
 
@@ -249,7 +249,7 @@ def admin_edit_vehicle_with_images(vehicle_id, on_singular_vehicle_page):
 def add_file(filename, key, file):
 
     original_name = secure_filename(filename)
-    ext = os.path.splitext(original_name)[1]
+    # ext = os.path.splitext(original_name)[1]
 
     # change content disposition to allow for in browser viewing
     content_type = getattr(file, "mimetype", None) or "application/octet-stream"
@@ -259,7 +259,7 @@ def add_file(filename, key, file):
         s3_client.upload_fileobj(
             Fileobj=file,
             Bucket=Config.S3_BUCKET,
-            Key=f"{key}{ext}",
+            Key=f"{key}",
             ExtraArgs={
                 "ContentType": content_type,
                 "ContentDisposition": content_disposition,
@@ -355,12 +355,11 @@ def admin_create_vehicle(sub):
         img.save(thumbnail_buffer, format=img_format)
         thumbnail_buffer.seek(0)
 
-
         try:
             s3_client.upload_fileobj(
                 Fileobj=thumbnail_buffer,
                 Bucket=Config.S3_BUCKET,
-                Key=f"{folder_prefix}/thumbnail/{vehicle_name}_thumbnail{ext}",
+                Key=f"{folder_prefix}/thumbnail/thumbnail{ext}"
             )
         except Exception as e:
             return error_response(message="Thumbnail upload failed", code=500)
@@ -368,12 +367,12 @@ def admin_create_vehicle(sub):
         first_image.stream.seek(0)
 
         # upload all images
-        for index, image in enumerate(images):
-            add_file(image.filename, f"{folder_prefix}/{vehicle_name}{index}", image)
+        for image in images:
+            add_file(image.filename, f"{folder_prefix}/{image.filename}", image)
 
         #upload all videos
-        for index, video in enumerate(videos):
-            add_file(video.filename, f"{folder_prefix}/videos/{vehicle_name}{index}", video)
+        for video in videos:
+            add_file(video.filename, f"{folder_prefix}/videos/{video.filename}", video)
 
         # upload all documents
 

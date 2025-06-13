@@ -73,20 +73,16 @@ const AdminVehiclePage = ({ vehicle: initial }: Props) => {
         };
     }, [initial.vehicleImages]);
 
-    console.log("VEHICLE");
-    console.log(vehicle);
-
-    console.log("imageFiles");
-    console.log(imageFiles);
+    const fileName = (u: string) => u.split("/").pop()!.split("?")[0];
 
     // determine existing & deleted files
     const { toAdd, toDelete } = useMemo(() => {
         const originalNames = new Set(
-            (initial.vehicleImages ?? []).map((u) => u.split("/").pop()!)
+            (initial.vehicleImages ?? []).map(fileName)
         );
         const add = imageFiles.filter((f) => !originalNames.has(f.name));
         const del = (initial.vehicleImages ?? []).filter(
-            (url) => !imageFiles.some((f) => url.endsWith("/" + f.name))
+            (url) => !imageFiles.some((f) => fileName(url) === f.name)
         );
         return { toAdd: add, toDelete: del };
     }, [imageFiles, initial.vehicleImages]);
