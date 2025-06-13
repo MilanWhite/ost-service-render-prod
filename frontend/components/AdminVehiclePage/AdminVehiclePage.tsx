@@ -85,11 +85,13 @@ const AdminVehiclePage = ({ vehicle: initial }: Props) => {
         );
       
         const add = imageFiles.filter(f => !originalNames.has(normName(f.name)));
-      
-        const del = (initial.vehicleImages ?? []).filter(
-          url => !imageFiles.some(f => normName(url) === normName(f.name))
-        );
-        
+
+        const del = imageFiles.filter(f =>
+            (initial.vehicleImages ?? []).some(
+              url => normName(f.name) === normName(url)
+            )
+          );
+
         console.log(originalNames)
         console.log(add)
         console.log(del)
