@@ -35,41 +35,37 @@ const AdminVehiclePage = ({ vehicle: initial }: Props) => {
 
     // create vehicle File out of URL
     useEffect(() => {
-        let cancelled = false; // don’t set state if unmounted
+        let cancelled = false;
 
         (async () => {
-            if (!initial.vehicleImages?.length) {
-                setImageFiles([]);
+            const urls = initial.vehicleImages ?? [];
+            if (urls.length === 0) {
+                if (!cancelled) setImageFiles([]);
                 return;
             }
 
-            const results = await Promise.allSettled(
-                initial.vehicleImages.map(async (rawUrl) => {
-                    // --- 1. Strip off the presign query so name looks like foo.jpg
-                    const [url] = rawUrl.split("?");
-                    const res = await fetch(rawUrl, { mode: "cors" });
-
-                    if (!res.ok) {
-                        // 403, 404, CORS failure → treat as “no image”
-                        throw new Error(`fetch ${url}: ${res.status}`);
-                    }
-
+            // Fetch each URL; return null on error
+            const filePromises = urls.map(async (rawUrl) => {
+                const [url] = rawUrl.split("?");
+                try {
+                    const res = await fetch(rawUrl);
+                    if (!res.ok) return null; //
                     const blob = await res.blob();
-                    const name = url.split("/").pop()!; // foo.jpg
-
+                    const name = url.split("/").pop()!;
                     return new File([blob], name, { type: blob.type });
-                })
+                } catch {
+                    return null; // network err etc.
+                }
+            });
+
+            const files = (await Promise.all(filePromises)).filter(
+                // filter failures we dont want THAT!
+                (f): f is File => f !== null
             );
 
-            // keep only successful fetches
-            const files: File[] = results
-                .filter(
-                    (r): r is PromiseFulfilledResult<File> =>
-                        r.status === "fulfilled"
-                )
-                .map((r) => r.value);
-
-            if (!cancelled) setImageFiles(files);
+            if (!cancelled) {
+                setImageFiles(files);
+            }
         })();
 
         return () => {
