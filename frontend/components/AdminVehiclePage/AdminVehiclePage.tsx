@@ -10,7 +10,6 @@ import ErrorBanner from "../ErrorBanner";
 
 import { useEditVehicle } from "../../hooks/useEditVehicle";
 import { translateStatus, Vehicle } from "../../hooks/interfaces";
-import apiClient from "../../services/api-client";
 
 interface Props {
     vehicle: Vehicle;
