@@ -11,7 +11,7 @@ from PIL import Image
 from app.extensions import db
 from app.main.routes import get_all_vehicle_images, get_vehicle_thumbnail
 
-from urllib.parse import urlparse
+from urllib.parse import unquote, urlparse
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -206,11 +206,12 @@ def admin_edit_vehicle_with_images(vehicle_id, on_singular_vehicle_page):
 
     # delete using url or key (if provided)
     for url_or_key in delete_keys:
-        if url_or_key.startswith("http"): # get key from full URL
-            parsed = urlparse(url_or_key)
-            obj_key = parsed.path.lstrip("/") # get key
+        if url_or_key.startswith("http"):
+            path    = urlparse(url_or_key).path.lstrip("/")
+            obj_key = unquote(path)
         else:
-            obj_key = f"{vehicle.cognito_sub}/{vehicle_id}/{url_or_key}" # make key otherwise
+            safe_name = unquote(url_or_key)
+            obj_key   = f"{vehicle.cognito_sub}/{vehicle_id}/{safe_name}"
 
         s3_client.delete_object(
             Bucket=Config.S3_BUCKET,
