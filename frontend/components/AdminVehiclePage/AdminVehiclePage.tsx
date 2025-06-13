@@ -1,13 +1,16 @@
+import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
-import { useEditVehicle } from "../../hooks/useEditVehicle";
-import { translateStatus, Vehicle } from "../../hooks/interfaces";
+import { CanceledError } from "axios";
 
 import ImageCarousel from "../ImageCarousel";
-
+import ZipImagePreviewer from "../ZipImagePreviewer";
 import AdminDeleteVehicleDialog from "../AdminDeleteVehicleDialog";
-import { useState } from "react";
-import { useTranslation } from "react-i18next";
 import ErrorBanner from "../ErrorBanner";
+
+import { useEditVehicle } from "../../hooks/useEditVehicle";
+import { translateStatus, Vehicle } from "../../hooks/interfaces";
+import apiClient from "../../services/api-client";
 
 interface Props {
     vehicle: Vehicle;
@@ -24,16 +27,77 @@ const AdminVehiclePage = ({ vehicle: initial }: Props) => {
         startEditing,
         cancelEditing,
         handleChange,
-        saveChanges,
     } = useEditVehicle(initial, true);
+
+    // image editor states
+    const [imageFiles, setImageFiles] = useState<File[]>([]);
+    const [thumb] = useState<File | null>(null); // thumbnail picking disabled
+
+    // create vehicle File out of URL
+    useEffect(() => {
+        (async () => {
+            if (!initial.vehicleImages?.length) return;
+
+            const list: File[] = [];
+            await Promise.all(
+                initial.vehicleImages.map(async (url) => {
+                    const res = await fetch(url);
+                    const blob = await res.blob();
+                    const name = url.split("/").pop()!;
+                    list.push(new File([blob], name, { type: blob.type }));
+                })
+            );
+            setImageFiles(list);
+        })();
+    }, [initial.vehicleImages]);
+
+    // determine existing & deleted files
+    const { toAdd, toDelete } = useMemo(() => {
+        const originalNames = new Set(
+            (initial.vehicleImages ?? []).map((u) => u.split("/").pop()!)
+        );
+        const add = imageFiles.filter((f) => !originalNames.has(f.name));
+        const del = (initial.vehicleImages ?? []).filter(
+            (url) => !imageFiles.some((f) => url.endsWith("/" + f.name))
+        );
+        return { toAdd: add, toDelete: del };
+    }, [imageFiles, initial.vehicleImages]);
+
+    const [saveError, setSaveError] = useState<string | null>(null);
+
+    const handleSave = async () => {
+        setSaveError(null);
+
+        const form = new FormData();
+        form.append("payload", JSON.stringify(vehicle)); // JSON fields
+
+        toAdd.forEach((f) => form.append("new_images", f, f.name));
+        toDelete.forEach((url) => form.append("delete_keys[]", url));
+
+        try {
+            await apiClient.put(
+                `/api/admin/vehicles/edit/${vehicle.id}/1`,
+                form,
+                { headers: { "Content-Type": "multipart/form-data" } }
+            );
+
+            // reload page to get new vehicle
+            window.location.reload();
+        } catch (err) {
+            if (!(err instanceof CanceledError))
+                setSaveError("AuthenticatedView.Errors.failed_to_edit_vehicle");
+        }
+    };
 
     const [isDeleteVehicleDialogOpen, setDeleteVehicleDialogOpen] =
         useState(false);
 
     return (
         <>
-            {editVehicleError && (
-                <ErrorBanner>{t(editVehicleError as string)}</ErrorBanner>
+            {(editVehicleError || saveError) && (
+                <ErrorBanner>
+                    {t((editVehicleError ?? saveError) as string)}
+                </ErrorBanner>
             )}
 
             <AdminDeleteVehicleDialog
@@ -45,18 +109,15 @@ const AdminVehiclePage = ({ vehicle: initial }: Props) => {
             <div className="bg-white">
                 <div className="mx-auto px-4 py-6 sm:px-6 lg:max-w-8xl lg:px-8">
                     <div className="lg:grid lg:grid-cols-7 lg:grid-rows-1 lg:gap-x-8 lg:gap-y-10 xl:gap-x-16">
-                        {/* Image section */}
                         <div className="lg:col-span-4 lg:row-end-1">
                             <ImageCarousel
-                                images={vehicle.vehicleImages!}
-                                videos={vehicle.vehicleVideos!}
+                                images={vehicle.vehicleImages ?? []}
+                                videos={vehicle.vehicleVideos ?? []}
                             />
                         </div>
-
-                        {/* Info & actions section */}
                         <div className="w-full mx-auto mt-14 max-w-2xl sm:mt-16 lg:col-span-3 lg:row-span-2 lg:row-end-2 lg:mt-0 lg:max-w-none">
-                            {/* Title & Edit Controls */}
                             <div className="flex items-center justify-between">
+                                {/* title */}
                                 {isEditing ? (
                                     <input
                                         type="text"
@@ -70,7 +131,6 @@ const AdminVehiclePage = ({ vehicle: initial }: Props) => {
                                     </h1>
                                 )}
                             </div>
-
                             {/* Details sections */}
                             <div className="mt-8 border-t border-gray-200 pt-8">
                                 <h3 className="text-lg font-medium text-gray-900">
@@ -400,20 +460,21 @@ const AdminVehiclePage = ({ vehicle: initial }: Props) => {
                                 </div>
                             </div>
 
+                            {/* Buttons  */}
                             <div className="mt-8">
                                 {isEditing ? (
                                     <div className="space-y-4">
                                         <button
                                             onClick={cancelEditing}
-                                            className="inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50 disabled:opacity-75 disabled:cursor-not-allowed sm:mt-0 sm:w-auto mt-3"
+                                            className="inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50 disabled:opacity-75 sm:mt-0 sm:w-auto mt-3"
                                             disabled={isEditVehicleLoading}
                                         >
                                             {t("AuthenticatedView.cancel")}
                                         </button>
                                         <button
-                                            onClick={saveChanges}
+                                            onClick={handleSave}
                                             disabled={isEditVehicleLoading}
-                                            className="inline-flex w-full justify-center rounded-md bg-primary px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-primary-hover disabled:opacity-75 disabled:cursor-not-allowed sm:ml-3 sm:w-auto"
+                                            className="inline-flex w-full justify-center rounded-md bg-primary px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-primary-hover disabled:opacity-75 sm:ml-3 sm:w-auto"
                                         >
                                             {isEditVehicleLoading
                                                 ? t("AuthenticatedView.saving")
@@ -424,18 +485,15 @@ const AdminVehiclePage = ({ vehicle: initial }: Props) => {
                                     <div className="flex space-x-4">
                                         <button
                                             onClick={startEditing}
-                                            className="rounded cursor-pointer bg-white w-full px-5 py-2 text-sm font-semibold text-gray-900 shadow ring-1 ring-gray-300 hover:bg-gray-50"
+                                            className="rounded bg-white w-full px-5 py-2 text-sm font-semibold text-gray-900 shadow ring-1 ring-gray-300 hover:bg-gray-50"
                                         >
                                             {t("AuthenticatedView.edit")}
                                         </button>
                                         <button
-                                            onClick={() => {
-                                                setDeleteVehicleDialogOpen(
-                                                    true
-                                                );
-                                            }}
-                                            disabled={false}
-                                            className="inline-flex cursor-pointer justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-red-500 disabled:opacity-75 disabled:cursor-not-allowed sm:w-auto"
+                                            onClick={() =>
+                                                setDeleteVehicleDialogOpen(true)
+                                            }
+                                            className="inline-flex justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-red-500 sm:w-auto"
                                         >
                                             {t("AuthenticatedView.delete")}
                                         </button>
@@ -444,13 +502,32 @@ const AdminVehiclePage = ({ vehicle: initial }: Props) => {
                             </div>
                         </div>
 
+                        {/* Image Editor */}
+
+                        {isEditing && (
+                            <div className="border-t border-gray-200 lg:col-span-4">
+                                <div className="mt-4">
+                                    <h3 className="text-lg font-medium text-gray-900">
+                                        {t("AuthenticatedView.edit_images")}
+                                    </h3>
+                                    <ZipImagePreviewer
+                                        files={imageFiles}
+                                        setFiles={setImageFiles}
+                                        thumbnail={thumb}
+                                        setThumbnail={() => {}}
+                                        disableThumbnailSelection
+                                    />
+                                </div>
+                            </div>
+                        )}
+
                         {/* Documents */}
+
                         <div className="mt-8 border-t border-gray-200 pt-8 lg:col-span-4">
                             <h3 className="text-lg font-medium text-gray-900">
                                 {t("AuthenticatedView.documents")}
                             </h3>
                             <div className="mt-4 space-y-4 text-sm font-medium">
-                                {/* Bill of Sale */}
                                 {vehicle.vehicleBillOfSaleDocument && (
                                     <div>
                                         <a
@@ -467,8 +544,6 @@ const AdminVehiclePage = ({ vehicle: initial }: Props) => {
                                         </a>
                                     </div>
                                 )}
-
-                                {/* Title Document */}
                                 {vehicle.vehicleTitleDocument && (
                                     <div>
                                         <a
@@ -483,9 +558,6 @@ const AdminVehiclePage = ({ vehicle: initial }: Props) => {
                                         </a>
                                     </div>
                                 )}
-
-                                {/* Bill of Landing # */}
-
                                 {vehicle.vehicleBillOfLandingDocument && (
                                     <div>
                                         <a

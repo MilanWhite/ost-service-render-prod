@@ -1,64 +1,87 @@
-import { useState, useCallback } from "react"
-import apiClient from "../services/api-client"
-import { Vehicle } from "./interfaces"
-import { CanceledError } from "axios"
+import { useState, useCallback } from "react";
+import apiClient from "../services/api-client";
+import { Vehicle } from "./interfaces";
+import { CanceledError } from "axios";
 
-export interface EditVehicleHook {
-    vehicle: Vehicle
-    isEditing: boolean
-    isEditVehicleLoading: boolean
-    editVehicleError: string | null
-    startEditing: () => void
-    cancelEditing: () => void
-    handleChange: (
-        field: keyof Vehicle
-    ) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void
-    saveChanges: () => Promise<void>
+export interface EditExtras {
+    newImages?: File[];
+    deleteKeys?: string[];
 }
 
-export function useEditVehicle(initial: Vehicle, on_singular_vehicle_page: boolean ): EditVehicleHook {
-    const [vehicle, setVehicle] = useState<Vehicle>(initial)
-    const [isEditing, setIsEditing] = useState(false)
-    const [isEditVehicleLoading, setIsEditVehicleLoading] = useState(false)
-    const [editVehicleError, setEditVehicleError] = useState<string | null>(null)
+export interface EditVehicleHook {
+    vehicle: Vehicle;
+    isEditing: boolean;
+    isEditVehicleLoading: boolean;
+    editVehicleError: string | null;
+    startEditing(): void;
+    cancelEditing(): void;
+    handleChange(
+        field: keyof Vehicle
+    ): (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
 
-    const startEditing = useCallback(() => {
-        setIsEditing(true)
-    }, [])
+    saveChanges(extras?: EditExtras): Promise<void>;
+}
 
+export function useEditVehicle(
+    initial: Vehicle,
+    onSingularVehiclePage: boolean
+): EditVehicleHook {
+    const [vehicle, setVehicle] = useState<Vehicle>(initial);
+    const [isEditing, setIsEditing] = useState(false);
+    const [isEditVehicleLoading, setIsEditVehicleLoading] = useState(false);
+    const [editVehicleError, setEditVehicleError] = useState<string | null>(
+        null
+    );
+
+    const startEditing = useCallback(() => setIsEditing(true), []);
     const cancelEditing = useCallback(() => {
-        setVehicle(initial)
-        setIsEditing(false)
-    }, [initial])
+        setVehicle(initial);
+        setIsEditing(false);
+    }, [initial]);
 
     const handleChange = useCallback(
         (field: keyof Vehicle) =>
-            (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-            setVehicle((v) => ({
-            ...v,
-            [field]: e.target.value,
-        }))
-    }, [])
+            (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
+                setVehicle((v) => ({ ...v, [field]: e.target.value })),
+        []
+    );
 
-    const saveChanges = useCallback(async () => {
+    const saveChanges = useCallback(
+        async (extras?: EditExtras) => {
+            setIsEditVehicleLoading(true);
+            try {
+                const form = new FormData();
+                form.append("payload", JSON.stringify(vehicle));
 
-        setIsEditVehicleLoading(true)
-        try {
-            const { data } = await apiClient.put(`/api/admin/vehicles/edit/${vehicle.id}/${on_singular_vehicle_page ? 1 : 0}`, vehicle)
+                extras?.newImages?.forEach((file) =>
+                    form.append("new_images", file, file.name)
+                );
+                extras?.deleteKeys?.forEach((k) =>
+                    form.append("delete_keys[]", k)
+                );
 
-            const updated = data.message.vehicle
-            setVehicle(updated)
-            setIsEditing(false)
-            setEditVehicleError(null)
-        } catch (err) {
-            if (err instanceof CanceledError) return;
+                const { data } = await apiClient.put(
+                    `/api/admin/vehicles/edit/${vehicle.id}/${
+                        onSingularVehiclePage ? 1 : 0
+                    }`,
+                    form
+                );
 
-            setEditVehicleError("AuthenticatedView.Errors.failed_to_edit_vehicle")
-        } finally {
-            setIsEditVehicleLoading(false)
-        }
-
-    }, [vehicle])
+                setVehicle(data.message.vehicle);
+                setIsEditing(false);
+                setEditVehicleError(null);
+            } catch (err) {
+                if (!(err instanceof CanceledError)) {
+                    setEditVehicleError(
+                        "AuthenticatedView.Errors.failed_to_edit_vehicle"
+                    );
+                }
+            } finally {
+                setIsEditVehicleLoading(false);
+            }
+        },
+        [vehicle, onSingularVehiclePage]
+    );
 
     return {
         vehicle,
@@ -68,6 +91,6 @@ export function useEditVehicle(initial: Vehicle, on_singular_vehicle_page: boole
         startEditing,
         cancelEditing,
         handleChange,
-        saveChanges
-    }
+        saveChanges,
+    };
 }

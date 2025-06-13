@@ -1,6 +1,6 @@
 import os
 from io import BytesIO
-from flask import Blueprint, request
+from flask import Blueprint, json, request
 from werkzeug.utils import secure_filename
 from app.decorators import cognito_auth_required
 from app.utils import error_response, success_response
@@ -10,6 +10,8 @@ from app.models import User, Vehicle
 from PIL import Image
 from app.extensions import db
 from app.main.routes import get_all_vehicle_images, get_vehicle_thumbnail
+
+from urllib.parse import urlparse
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -170,29 +172,15 @@ def admin_get_specific_user(sub):
         print(str(e))
         return error_response(message=str(e), code=500)
 
-
 @admin_bp.route("/vehicles/edit/<int:vehicle_id>/<int:on_singular_vehicle_page>", methods=["PUT"])
 @cognito_auth_required(["Admin"])
-def admin_edit_vehicle(vehicle_id, on_singular_vehicle_page):
-    """
-    Updates the fields on a vehicle. Expects a JSON body with any of:
-      - vehicle_name
-      - lot_number
-      - auction_name
-      - location
-      - shipping_status
-      - delivery_status
-      - price_shipping
-      - price_delivery
+def admin_edit_vehicle_with_images(vehicle_id, on_singular_vehicle_page):
 
-      - container_number
-      - port_of_origin
-      - port_of_destination
-      - delivery_address
-      - receiver_id
-    """
+    # parse everything
+    payload = json.loads(request.form["payload"]) # trying to do payload from now on
+    new_files   = request.files.getlist("new_images")
+    delete_keys = request.form.getlist("delete_keys[]")
 
-    data = request.get_json() or {}
     allowed = {
         "vehicle_name": str,
         "lot_number": str,
@@ -202,7 +190,6 @@ def admin_edit_vehicle(vehicle_id, on_singular_vehicle_page):
         "delivery_status": str,
         "price_shipping": float,
         "price_delivery": float,
-
         "container_number": str,
         "port_of_origin": str,
         "port_of_destination": str,
@@ -210,32 +197,53 @@ def admin_edit_vehicle(vehicle_id, on_singular_vehicle_page):
         "receiver_id": str,
     }
 
-    vehicle = Vehicle.query.get(vehicle_id)
-
-    if not vehicle:
-        error_response("Vehicle not found", 404)
-
-    for field, field_type in allowed.items():
-        if field in data:
-            try:
-                setattr(vehicle, field, field_type(data[field]))
-            except (ValueError, TypeError):
-                error_response(f"Invalid value for {field}", 400)
-
+    # update backend
+    vehicle = Vehicle.query.get_or_404(vehicle_id)
+    for field, cast in allowed.items():
+        if field in payload:
+            setattr(vehicle, field, cast(payload[field]))
     db.session.commit()
 
-    vehicle = vehicle.to_dict()
+    # delete using url or key (if provided)
+    for url_or_key in delete_keys:
+        if url_or_key.startswith("http"): # get key from full URL
+            parsed = urlparse(url_or_key)
+            obj_key = parsed.path.lstrip("/") # get key
+        else:
+            obj_key = f"{vehicle.cognito_sub}/{vehicle_id}/{url_or_key}" # make key otherwise
 
-    vehicle["vehicleImages"] = []
-    vehicle["vehicleVideos"] = []
-    vehicle["vehicleThumbnail"] = []
+        s3_client.delete_object(
+            Bucket=Config.S3_BUCKET,
+            Key=obj_key,
+        )
 
-    if (on_singular_vehicle_page):
-        vehicle["vehicleImages"], vehicle["vehicleVideos"]  = get_all_vehicle_images(vehicle["cognito_sub"], vehicle_id)
+    # upload new Image files
+    for f in new_files:
+        s3_client.upload_fileobj(
+            f,
+            Config.S3_BUCKET,
+            f"{vehicle.cognito_sub}/{vehicle_id}/{f.filename}",
+            ExtraArgs={"ContentType": f.mimetype},
+        )
+
+    # rebuild vehicle
+    v_dict = vehicle.to_dict()
+    v_dict["vehicleImages"] = []
+    v_dict["vehicleVideos"] = []
+    v_dict["vehicleThumbnail"] = ""
+
+    if on_singular_vehicle_page:
+        images, videos = get_all_vehicle_images(
+            vehicle.cognito_sub, vehicle_id
+        )
+        v_dict["vehicleImages"] = images
+        v_dict["vehicleVideos"] = videos
     else:
-        vehicle["vehicleThumbnail"] = get_vehicle_thumbnail(vehicle["cognito_sub"], vehicle_id)
+        v_dict["vehicleThumbnail"] = get_vehicle_thumbnail(
+            vehicle.cognito_sub, vehicle_id
+        )
 
-    return success_response({"vehicle": vehicle})
+    return success_response({"vehicle": v_dict})
 
 
 def add_file(filename, key, file):

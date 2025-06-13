@@ -271,7 +271,10 @@ i18n.use(LanguageDetector)
                         add_vehicle_description:
                             "This vehicle will be added to this user's account.",
                         upload_images: "Upload Images",
+                        edit_images: "Edit Images",
                         upload_videos: "Upload Videos",
+
+                        thumbnail: "Thumbnail",
 
                         // General info
                         general_info: "General Info",
@@ -646,7 +649,10 @@ i18n.use(LanguageDetector)
                         add_vehicle_description:
                             "Этот автомобиль будет добавлен в аккаунт выбранного пользователя.",
                         upload_images: "Загрузить изображения",
+                        edit_images: "Редактировать изображения",
                         upload_videos: "Загрузить видео",
+
+                        thumbnail: "Миниатюра",
 
                         // General info
                         general_info: "Общая информация",
@@ -1023,7 +1029,10 @@ i18n.use(LanguageDetector)
                         add_vehicle_description:
                             "Це авто буде додано до акаунта користувача.",
                         upload_images: "Завантажити зображення",
+                        edit_images: "Редагувати зображення",
                         upload_videos: "Завантажити відео",
+
+                        thumbnail: "Мініатюра",
 
                         // General info
                         general_info: "Загальна інформація",

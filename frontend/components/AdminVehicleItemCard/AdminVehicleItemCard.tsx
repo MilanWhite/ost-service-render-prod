@@ -1,13 +1,11 @@
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
-
-import { useEditVehicle } from "../../hooks/useEditVehicle";
 import { Link } from "react-router-dom";
-
-import { URLS } from "../../src/config/navigation";
-import { Vehicle } from "../../hooks/interfaces";
 import { useTranslation } from "react-i18next";
 
-import { translateStatus } from "../../hooks/interfaces";
+import { useEditVehicle } from "../../hooks/useEditVehicle";
+import { Vehicle, translateStatus } from "../../hooks/interfaces";
+import { URLS } from "../../src/config/navigation";
+import ErrorBanner from "../ErrorBanner";
 
 interface Props {
     vehicle: Vehicle;
@@ -20,14 +18,23 @@ const AdminVehicleItemCard = ({ vehicle: initial }: Props) => {
         vehicle,
         isEditing,
         isEditVehicleLoading,
+        editVehicleError,
         startEditing,
         cancelEditing,
         handleChange,
         saveChanges,
     } = useEditVehicle(initial, false);
 
+    const handleSave = async () => {
+        await saveChanges();
+    };
+
     return (
         <section aria-labelledby="vehicle-heading" className="mt-6">
+            {editVehicleError && (
+                <ErrorBanner>{t(editVehicleError)}</ErrorBanner>
+            )}
+
             <h2 id="vehicle-heading" className="sr-only">
                 {t("AuthenticatedView.vehicle_info")}
             </h2>
@@ -319,25 +326,24 @@ const AdminVehicleItemCard = ({ vehicle: initial }: Props) => {
                         </dl>
                     </div>
                 </div>
+                {/* Action Btns */}
                 <div className="sm:absolute right-8 bottom-8">
-                    <div className="mt-5sm:mt-4 sm:flex sm:flex-row-reverse">
+                    <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
                         {isEditing ? (
                             <>
                                 <button
-                                    type="button"
-                                    onClick={saveChanges}
-                                    className="inline-flex w-full justify-center rounded-md bg-primary px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-primary-hover disabled:opacity-75 disabled:cursor-not-allowed sm:ml-3 sm:w-auto"
+                                    onClick={handleSave}
                                     disabled={isEditVehicleLoading}
+                                    className="cursor-pointer inline-flex w-full justify-center rounded-md bg-primary px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-75 sm:ml-3 sm:w-auto"
                                 >
                                     {isEditVehicleLoading
                                         ? t("AuthenticatedView.saving")
                                         : t("AuthenticatedView.save")}
                                 </button>
                                 <button
-                                    type="button"
                                     onClick={cancelEditing}
-                                    className="inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50 disabled:opacity-75 disabled:cursor-not-allowed sm:mt-0 sm:w-auto mt-3"
                                     disabled={isEditVehicleLoading}
+                                    className="cursor-pointer mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-75 sm:mt-0 sm:w-auto"
                                 >
                                     {t("AuthenticatedView.cancel")}
                                 </button>
@@ -351,18 +357,16 @@ const AdminVehicleItemCard = ({ vehicle: initial }: Props) => {
                                     )}
                                 >
                                     <button
+                                        className="cursor-pointer inline-flex w-full cursor-pointer justify-center rounded-md bg-primary px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-primary-hover sm:ml-3 sm:w-auto"
                                         type="button"
-                                        onClick={() => {}}
-                                        className="cursor-pointer inline-flex w-full justify-center rounded-md bg-primary px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-primary-hover sm:ml-3 sm:w-auto"
                                     >
                                         {t("AuthenticatedView.view")}
                                     </button>
                                 </Link>
-
                                 <button
-                                    type="button"
                                     onClick={startEditing}
-                                    className="cursor-pointer mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                                    className="cursor-pointer mt-3 inline-flex w-full cursor-pointer justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                                    type="button"
                                 >
                                     {t("AuthenticatedView.edit")}
                                 </button>
