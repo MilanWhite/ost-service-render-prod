@@ -73,19 +73,25 @@ const AdminVehiclePage = ({ vehicle: initial }: Props) => {
         };
     }, [initial.vehicleImages]);
 
-    const fileName = (u: string) => u.split("/").pop()!.split("?")[0];
+    const normName = (u: string) =>
+        decodeURIComponent(u.split("/").pop()!.split("?")[0])
+          .replace(/\+/g, " ")
+          .toLowerCase();
 
     // determine existing & deleted files
     const { toAdd, toDelete } = useMemo(() => {
         const originalNames = new Set(
-            (initial.vehicleImages ?? []).map(fileName)
+          (initial.vehicleImages ?? []).map(normName)
         );
-        const add = imageFiles.filter((f) => !originalNames.has(f.name));
+      
+        const add = imageFiles.filter(f => !originalNames.has(normName(f.name)));
+      
         const del = (initial.vehicleImages ?? []).filter(
-            (url) => !imageFiles.some((f) => fileName(url) === f.name)
+          url => !imageFiles.some(f => normName(url) === normName(f.name))
         );
+      
         return { toAdd: add, toDelete: del };
-    }, [imageFiles, initial.vehicleImages]);
+      }, [imageFiles, initial.vehicleImages]);
 
     const [saveError, setSaveError] = useState<string | null>(null);
 
