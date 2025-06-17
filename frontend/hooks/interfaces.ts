@@ -19,12 +19,16 @@ export interface Vehicle {
     user_email: string;
     created_at: string;
 
-    // new fields
     container_number: string;
     port_of_origin: string;
     port_of_destination: string;
     delivery_address: string;
     receiver_id: string;
+
+    vin: string;
+    powertrain: string;
+    model: string;
+    color: string;
 
     // optional
     vehicleImages?: string[];

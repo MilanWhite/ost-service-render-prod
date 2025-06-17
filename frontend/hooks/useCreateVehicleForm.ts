@@ -13,12 +13,16 @@ export interface CreateVehicleInfo {
     priceShipping: string;
     vehicleName: string;
 
-    // new fields
     deliveryAddress: string,
     portOfOrigin: string,
     portOfDestination: string,
     containerNumber: string,
     receiverId: string,
+
+    vin: string;
+    powertrain: string;
+    model: string;
+    color: string;
 }
 
 export interface CreateVehicleMedia {
@@ -54,6 +58,11 @@ const useCreateVehicleForm = (user: User) => {
             formData.append("portOfDestination", createVehicleInfo.portOfDestination);
             formData.append("containerNumber", createVehicleInfo.containerNumber);
             formData.append("receiverId", createVehicleInfo.receiverId);
+
+            formData.append("vin", createVehicleInfo.vin);
+            formData.append("powertrain", createVehicleInfo.powertrain);
+            formData.append("model", createVehicleInfo.model);
+            formData.append("color", createVehicleInfo.color);
 
             createVehicleMedia.images.forEach((file) => formData.append("images", file, file.name))
             {createVehicleMedia.thumbnail && formData.append("thumbnail", createVehicleMedia.thumbnail, createVehicleMedia.thumbnail.name)}

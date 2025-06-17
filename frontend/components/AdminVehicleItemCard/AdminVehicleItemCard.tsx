@@ -67,7 +67,7 @@ const AdminVehicleItemCard = ({ vehicle: initial }: Props) => {
                                         value={vehicle.vehicle_name}
                                         onChange={handleChange("vehicle_name")}
                                     />
-
+                                    
                                     <label className="block text-sm font-medium text-gray-700 mt-4">
                                         {t("AuthenticatedView.price_delivery")}
                                     </label>

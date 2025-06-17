@@ -24,21 +24,34 @@ export const createVehicleSchema = z.object({
     vehicleName: z
         .string()
         .trim()
-        .min(1, { message: "AuthenticatedView.Errors.vehicle_name_required" }),
+        .min(1, { message: "AuthenticatedView.Errors.vehicle_name_required" })
+        .max(100, { message: "AuthenticatedView.Errors.exceeded_length" }),
 
-    lotNumber: z.string().trim(),
+    lotNumber: z
+        .string()
+        .trim()
+        .max(50, { message: "AuthenticatedView.Errors.exceeded_length" }),
 
-    auctionName: z.string().trim(),
+    auctionName: z
+        .string()
+        .trim()
+        .max(100, { message: "AuthenticatedView.Errors.exceeded_length" }),
 
-    location: z.string().trim(),
+    location: z
+        .string()
+        .trim()
+        .max(100, { message: "AuthenticatedView.Errors.exceeded_length" }),
 
-    shippingStatus: z.string().trim(),
+    shippingStatus: z
+        .string()
+        .trim()
+        .max(50, { message: "AuthenticatedView.Errors.exceeded_length" }),
 
+    // ─── Prices (regex unchanged) ─────────────────────────────────────────────
     priceDelivery: z
         .string()
         .trim()
         .regex(/^(?:\d+(?:\.\d{1,2})?)?$/, {
-            // empty input is valid
             message: "AuthenticatedView.Errors.delivery_price_invalid",
         }),
 
@@ -49,15 +62,49 @@ export const createVehicleSchema = z.object({
             message: "AuthenticatedView.Errors.shipping_price_invalid",
         }),
 
+    // ─── Logistics / Dispatch ────────────────────────────────────────────────
     deliveryAddress: z.string().trim(),
 
-    portOfOrigin: z.string().trim(),
+    portOfOrigin: z
+        .string()
+        .trim()
+        .max(255, { message: "AuthenticatedView.Errors.exceeded_length" }),
 
-    portOfDestination: z.string().trim(),
+    portOfDestination: z
+        .string()
+        .trim()
+        .max(255, { message: "AuthenticatedView.Errors.exceeded_length" }),
 
-    containerNumber: z.string().trim(),
+    containerNumber: z
+        .string()
+        .trim()
+        .max(20, { message: "AuthenticatedView.Errors.exceeded_length" }),
 
-    receiverId: z.string().trim(),
+    receiverId: z
+        .string()
+        .trim()
+        .max(255, { message: "AuthenticatedView.Errors.exceeded_length" }),
+
+    // ─── Vehicle Details ─────────────────────────────────────────────────────
+    vin: z
+        .string()
+        .trim()
+        .max(17, { message: "AuthenticatedView.Errors.exceeded_length" }), // need to change to exactly 17
+
+    powertrain: z
+        .string()
+        .trim()
+        .max(50, { message: "AuthenticatedView.Errors.exceeded_length" }),
+
+    model: z
+        .string()
+        .trim()
+        .max(100, { message: "AuthenticatedView.Errors.exceeded_length" }),
+
+    color: z
+        .string()
+        .trim()
+        .max(30, { message: "AuthenticatedView.Errors.exceeded_length" }),
 });
 
 type FormData = z.infer<typeof createVehicleSchema>;
@@ -81,8 +128,9 @@ const CreateVehicleForm = ({ user, vehicleRefetch }: Props) => {
     const [titleDocument, setTitleDocument] = useState<File | null>(null);
     const [billOfLadingDocument, setBillOfLadingDocument] =
         useState<File | null>(null);
-    const [swbReleaseDocument, setSWBReleaseDocument] =
-        useState<File | null>(null);
+    const [swbReleaseDocument, setSWBReleaseDocument] = useState<File | null>(
+        null
+    );
 
     const [files, setFiles] = useState<File[]>([]);
     const [thumbnail, setThumbnail] = useState<File | null>(null);
@@ -112,6 +160,11 @@ const CreateVehicleForm = ({ user, vehicleRefetch }: Props) => {
             portOfDestination: data.portOfDestination,
             containerNumber: data.containerNumber,
             receiverId: data.receiverId,
+
+            vin: data.vin,
+            powertrain: data.powertrain,
+            model: data.model,
+            color: data.color,
         };
 
         const createVehicleMedia: CreateVehicleMedia = {
@@ -161,9 +214,7 @@ const CreateVehicleForm = ({ user, vehicleRefetch }: Props) => {
         e.target.value = "";
     };
 
-    const handleSWBReleaseUpload = (
-        e: React.ChangeEvent<HTMLInputElement>
-    ) => {
+    const handleSWBReleaseUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const swbRelease = e.target.files && e.target.files[0];
         if (!swbRelease) return;
         setSWBReleaseDocument(swbRelease);
@@ -244,6 +295,28 @@ const CreateVehicleForm = ({ user, vehicleRefetch }: Props) => {
                         ))}
                     </div>
                 </div>
+
+                <div className="sm:col-span-2">
+                    <label
+                        htmlFor="vin"
+                        className="block text-sm/6 font-semibold text-gray-900"
+                    >
+                        {t("AuthenticatedView.vin")}
+                    </label>
+                    <div className="mt-2.5">
+                        <input
+                            id="vin"
+                            type="vin"
+                            autoComplete="vin"
+                            className="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-primary"
+                            {...register("vin")}
+                        />
+                        <ErrorText>
+                            {errors.vin && t(errors.vin.message as string)}
+                        </ErrorText>
+                    </div>
+                </div>
+
                 <label className="block mt-4 mb-2 font-medium">
                     {t("AuthenticatedView.general_info")}
                 </label>
@@ -285,6 +358,10 @@ const CreateVehicleForm = ({ user, vehicleRefetch }: Props) => {
                                     className="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-primary"
                                     {...register("lotNumber")}
                                 />
+                                <ErrorText>
+                                    {errors.lotNumber &&
+                                        t(errors.lotNumber.message as string)}
+                                </ErrorText>
                             </div>
                         </div>
                         <div className="sm:col-span-2">
@@ -302,6 +379,10 @@ const CreateVehicleForm = ({ user, vehicleRefetch }: Props) => {
                                     className="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-primary"
                                     {...register("auctionName")}
                                 />
+                                <ErrorText>
+                                    {errors.auctionName &&
+                                        t(errors.auctionName.message as string)}
+                                </ErrorText>
                             </div>
                         </div>
                         <div className="sm:col-span-2">
@@ -319,6 +400,10 @@ const CreateVehicleForm = ({ user, vehicleRefetch }: Props) => {
                                     className="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-primary"
                                     {...register("location")}
                                 />
+                                <ErrorText>
+                                    {errors.location &&
+                                        t(errors.location.message as string)}
+                                </ErrorText>
                             </div>
                         </div>
                         <div className="sm:col-span-2">
@@ -423,6 +508,69 @@ const CreateVehicleForm = ({ user, vehicleRefetch }: Props) => {
                                 </div>
                             </div>
                         </div>
+
+                        <div className="sm:col-span-2">
+                            <label
+                                htmlFor="powertrain"
+                                className="block text-sm/6 font-semibold text-gray-900"
+                            >
+                                {t("AuthenticatedView.powertrain")}
+                            </label>
+                            <div className="mt-2.5">
+                                <input
+                                    id="powertrain"
+                                    type="powertrain"
+                                    autoComplete="powertrain"
+                                    className="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-primary"
+                                    {...register("powertrain")}
+                                />
+                                <ErrorText>
+                                    {errors.powertrain &&
+                                        t(errors.powertrain.message as string)}
+                                </ErrorText>
+                            </div>
+                        </div>
+                        <div className="sm:col-span-2">
+                            <label
+                                htmlFor="model"
+                                className="block text-sm/6 font-semibold text-gray-900"
+                            >
+                                {t("AuthenticatedView.model")}
+                            </label>
+                            <div className="mt-2.5">
+                                <input
+                                    id="model"
+                                    type="model"
+                                    autoComplete="model"
+                                    className="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-primary"
+                                    {...register("model")}
+                                />
+                                <ErrorText>
+                                    {errors.model &&
+                                        t(errors.model.message as string)}
+                                </ErrorText>
+                            </div>
+                        </div>
+                        <div className="sm:col-span-2">
+                            <label
+                                htmlFor="color"
+                                className="block text-sm/6 font-semibold text-gray-900"
+                            >
+                                {t("AuthenticatedView.color")}
+                            </label>
+                            <div className="mt-2.5">
+                                <input
+                                    id="color"
+                                    className="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-primary"
+                                    {...register("color")}
+                                />
+                                <ErrorText>
+                                    {errors.color &&
+                                        t(errors.color.message as string)}
+                                </ErrorText>
+                            </div>
+                        </div>
+
                         <label className="block mt-4 mb-2 font-medium">
                             {t("AuthenticatedView.dispatch_info")}
                         </label>
@@ -441,6 +589,13 @@ const CreateVehicleForm = ({ user, vehicleRefetch }: Props) => {
                                     className="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-primary"
                                     {...register("deliveryAddress")}
                                 />
+                                <ErrorText>
+                                    {errors.deliveryAddress &&
+                                        t(
+                                            errors.deliveryAddress
+                                                .message as string
+                                        )}
+                                </ErrorText>
                             </div>
                         </div>
                         <div className="sm:col-span-2 grid grid-cols-2 gap-x-6 gap-y-6 sm:grid-cols-6">
@@ -462,6 +617,13 @@ const CreateVehicleForm = ({ user, vehicleRefetch }: Props) => {
                                             {...register("portOfOrigin")}
                                         />
                                     </div>
+                                    <ErrorText>
+                                        {errors.portOfOrigin &&
+                                            t(
+                                                errors.portOfOrigin
+                                                    .message as string
+                                            )}
+                                    </ErrorText>
                                 </div>
                             </div>
 
@@ -483,6 +645,13 @@ const CreateVehicleForm = ({ user, vehicleRefetch }: Props) => {
                                             {...register("portOfDestination")}
                                         />
                                     </div>
+                                    <ErrorText>
+                                        {errors.portOfDestination &&
+                                            t(
+                                                errors.portOfDestination
+                                                    .message as string
+                                            )}
+                                    </ErrorText>
                                 </div>
                             </div>
                         </div>
@@ -505,6 +674,13 @@ const CreateVehicleForm = ({ user, vehicleRefetch }: Props) => {
                                             {...register("containerNumber")}
                                         />
                                     </div>
+                                    <ErrorText>
+                                        {errors.containerNumber &&
+                                            t(
+                                                errors.containerNumber
+                                                    .message as string
+                                            )}
+                                    </ErrorText>
                                 </div>
                             </div>
 
@@ -526,6 +702,13 @@ const CreateVehicleForm = ({ user, vehicleRefetch }: Props) => {
                                             {...register("receiverId")}
                                         />
                                     </div>
+                                    <ErrorText>
+                                        {errors.receiverId &&
+                                            t(
+                                                errors.receiverId
+                                                    .message as string
+                                            )}
+                                    </ErrorText>
                                 </div>
                             </div>
                         </div>
@@ -629,7 +812,9 @@ const CreateVehicleForm = ({ user, vehicleRefetch }: Props) => {
                         <div className="mb-4">
                             <div>
                                 <label className="block mb-1 font-medium">
-                                    {t("AuthenticatedView.swb_release_document")}
+                                    {t(
+                                        "AuthenticatedView.swb_release_document"
+                                    )}
                                 </label>
                                 <input
                                     type="file"

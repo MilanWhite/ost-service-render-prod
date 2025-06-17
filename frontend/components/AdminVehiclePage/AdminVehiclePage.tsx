@@ -356,6 +356,88 @@ const AdminVehiclePage = ({ vehicle: initial }: Props) => {
                                 </div>
                             </div>
 
+                            {/* Vehicle Info */}
+                            <div className="mt-8 border-t border-gray-200 pt-8">
+                                <h3 className="text-lg font-medium text-gray-900">
+                                    {t("AuthenticatedView.vehicle_info")}
+                                </h3>
+                                <div className="mt-4 space-y-4">
+                                    <div>
+                                        <p className="text-sm font-medium text-gray-700">
+                                            {t("AuthenticatedView.vin")}
+                                        </p>
+                                        {isEditing ? (
+                                            <input
+                                                type="text"
+                                                className="mt-1 block w-full rounded-md bg-white px-2 py-1 text-md text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-primary sm:text-md/6"
+                                                value={vehicle.vin}
+                                                onChange={handleChange("vin")}
+                                            />
+                                        ) : (
+                                            <p className="mt-1 text-gray-900">
+                                                {vehicle?.vin}
+                                            </p>
+                                        )}
+                                    </div>
+
+                                    <div>
+                                        <p className="text-sm font-medium text-gray-700">
+                                            {t("AuthenticatedView.powertrain")}
+                                        </p>
+                                        {isEditing ? (
+                                            <input
+                                                type="text"
+                                                className="mt-1 block w-full rounded-md bg-white px-2 py-1 text-md text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-primary sm:text-md/6"
+                                                value={vehicle.powertrain}
+                                                onChange={handleChange(
+                                                    "powertrain"
+                                                )}
+                                            />
+                                        ) : (
+                                            <p className="mt-1 text-gray-900">
+                                                {vehicle?.powertrain}
+                                            </p>
+                                        )}
+                                    </div>
+
+                                    <div>
+                                        <p className="text-sm font-medium text-gray-700">
+                                            {t("AuthenticatedView.model")}
+                                        </p>
+                                        {isEditing ? (
+                                            <input
+                                                type="text"
+                                                className="mt-1 block w-full rounded-md bg-white px-2 py-1 text-md text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-primary sm:text-md/6"
+                                                value={vehicle.model}
+                                                onChange={handleChange("model")}
+                                            />
+                                        ) : (
+                                            <p className="mt-1 text-gray-900">
+                                                {vehicle?.model}
+                                            </p>
+                                        )}
+                                    </div>
+
+                                    <div>
+                                        <p className="text-sm font-medium text-gray-700">
+                                            {t("AuthenticatedView.color")}
+                                        </p>
+                                        {isEditing ? (
+                                            <input
+                                                type="text"
+                                                className="mt-1 block w-full rounded-md bg-white px-2 py-1 text-md text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-primary sm:text-md/6"
+                                                value={vehicle.color}
+                                                onChange={handleChange("color")}
+                                            />
+                                        ) : (
+                                            <p className="mt-1 text-gray-900">
+                                                {vehicle?.color}
+                                            </p>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+
                             {/* Logistics / Shipping Details Section */}
                             <div className="mt-8 border-t border-gray-200 pt-8">
                                 <h3 className="text-lg font-medium text-gray-900">

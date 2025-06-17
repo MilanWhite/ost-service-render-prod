@@ -294,6 +294,11 @@ i18n.use(LanguageDetector)
                         container_number: "Container Number",
                         receiver_id: "Receiver Id",
 
+                        vin: "VIN",
+                        powertrain: "Powertrain",
+                        model: "Model",
+                        color: "Color",
+
                         // Documents
                         documents: "Documents",
                         bill_of_sale: "Bill of Sale",
@@ -402,6 +407,8 @@ i18n.use(LanguageDetector)
                                 "Failed to delete user. Please try again later.",
 
                             no_images_available: "No images available",
+
+                            exceeded_length: "The input exceeds the maximum allowed length.",
                         },
                     },
                 },
@@ -674,6 +681,11 @@ i18n.use(LanguageDetector)
                         container_number: "Номер контейнера",
                         receiver_id: "ID получателя",
 
+                        vin: "VIN",
+                        powertrain: "Трансмиссия и силовая установка",
+                        model: "Модель",
+                        color: "Цвет",
+
                         // Documents
                         documents: "Документы",
                         bill_of_sale: "Договор купли-продажи",
@@ -785,6 +797,8 @@ i18n.use(LanguageDetector)
                                 "Не удалось удалить пользователя. Пожалуйста, попробуйте позже.",
 
                             no_images_available: "Изображения недоступны",
+
+                            exceeded_length: "Длина введённых данных превышает допустимый предел.",
                         },
                     },
                 },
@@ -1056,6 +1070,11 @@ i18n.use(LanguageDetector)
                         container_number: "Номер контейнера",
                         receiver_id: "ID одержувача",
 
+                        vin: "VIN",
+                        powertrain: "Трансмісія та силова установка",
+                        model: "Модель",
+                        color: "Колір",
+
                         // Documents
                         documents: "Документи",
                         bill_of_sale: "Рахунок-фактура",
@@ -1167,6 +1186,8 @@ i18n.use(LanguageDetector)
                                 "Не вдалося видалити користувача. Спробуйте пізніше.",
 
                             no_images_available: "Зображення недоступні",
+
+                            exceeded_length: "Довжина введених даних перевищує допустиму межу.",
                         },
                     },
                 },

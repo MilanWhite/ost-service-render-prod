@@ -195,6 +195,10 @@ def admin_edit_vehicle_with_images(vehicle_id, on_singular_vehicle_page):
         "port_of_destination": str,
         "delivery_address": str,
         "receiver_id": str,
+        "vin": str,
+        "powertrain": str,
+        "model": str,
+        "color": str,
     }
 
     # update backend
@@ -287,6 +291,11 @@ def admin_create_vehicle(sub):
         port_of_origin = request.form.get("portOfOrigin") or ""
         receiver_id = request.form.get("receiverId") or ""
 
+        vin = request.form.get("vin") or ""
+        powertrain = request.form.get("powertrain") or ""
+        model = request.form.get("model") or ""
+        color = request.form.get("color") or ""
+
         price_delivery = float(request.form.get("priceDelivery") or 0)
         price_shipping = float(request.form.get("priceShipping") or 0)
 
@@ -322,12 +331,16 @@ def admin_create_vehicle(sub):
             vehicle_name=vehicle_name,
             user_email=user_email,
 
-            # new fields
             container_number=container_number,
             delivery_address=delivery_address,
             port_of_destination=port_of_destination,
             port_of_origin=port_of_origin,
             receiver_id=receiver_id,
+
+            vin=vin,
+            powertrain=powertrain,
+            model=model,
+            color=color
         )
 
         db.session.add(new_vehicle)

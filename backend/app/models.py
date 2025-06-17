@@ -41,7 +41,11 @@ class Vehicle(db.Model):
     price_delivery      = db.Column(db.Numeric(10, 2), nullable=False, default=0)
     price_shipping      = db.Column(db.Numeric(10, 2), nullable=False, default=0)
 
-    # Deleted user --> all vehicles deleted
+    vin         = db.Column(db.CHAR(17))
+    powertrain  = db.Column(db.String(50))
+    model       = db.Column(db.String(100))
+    color       = db.Column(db.String(30))
+
     cognito_sub = db.Column(
         db.String(255),
         db.ForeignKey("users.cognito_sub", ondelete="CASCADE"),
@@ -51,7 +55,6 @@ class Vehicle(db.Model):
     user_email          = db.Column(db.String(100), nullable=False)
     created_at          = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
-    # i should make these not nullable to keep up the style but i HATE migrations
     container_number    = db.Column(db.String(20))
     port_of_origin      = db.Column(db.String(100))
     port_of_destination = db.Column(db.String(100))
@@ -70,6 +73,10 @@ class Vehicle(db.Model):
             "shipping_status":      self.shipping_status,
             "price_delivery":       float(self.price_delivery),
             "price_shipping":       float(self.price_shipping),
+            "vin":                  self.vin,
+            "powertrain":           self.powertrain,
+            "model":                self.model,
+            "color":                self.color,
             "cognito_sub":          self.cognito_sub,
             "user_email":           self.user_email,
             "created_at":           self.created_at.isoformat(),
