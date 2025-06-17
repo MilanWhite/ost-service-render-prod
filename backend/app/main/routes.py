@@ -237,6 +237,8 @@ def main_get_specific_vehicle(sub,vehicle_id):
 
         vehicle["vehicleBillOfLadingDocument"] = get_vehicle_document(sub, vehicle_id, "bill_of_lading_document")
 
+        vehicle["vehicleSWBReleaseDocument"] = get_vehicle_document(sub, vehicle_id, "swb_release_document")
+
         return success_response({"vehicle": vehicle})
 
     except Exception as e:

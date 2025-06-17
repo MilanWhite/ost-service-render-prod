@@ -593,6 +593,22 @@ const AdminVehiclePage = ({ vehicle: initial }: Props) => {
                                             </a>
                                         </div>
                                     )}
+                                    {vehicle.vehicleSWBReleaseDocument && (
+                                        <div>
+                                            <a
+                                                href={
+                                                    vehicle.vehicleSWBReleaseDocument
+                                                }
+                                                target="_blank"
+                                                rel="noopener"
+                                                className="text-primary hover:text-primary-hover"
+                                            >
+                                                {t(
+                                                    "AuthenticatedView.view_swb_release_document"
+                                                )}
+                                            </a>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>

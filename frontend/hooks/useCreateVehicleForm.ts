@@ -28,6 +28,7 @@ export interface CreateVehicleMedia {
     billOfSaleDocument: File | null;
     titleDocument: File | null;
     billOfLadingDocument: File | null;
+    swbReleaseDocument: File | null;
 }
 
 const useCreateVehicleForm = (user: User) => {
@@ -48,7 +49,6 @@ const useCreateVehicleForm = (user: User) => {
             formData.append("priceShipping", createVehicleInfo.priceShipping);
             formData.append("vehicleName", createVehicleInfo.vehicleName);
 
-            // new fields
             formData.append("deliveryAddress", createVehicleInfo.deliveryAddress);
             formData.append("portOfOrigin", createVehicleInfo.portOfOrigin);
             formData.append("portOfDestination", createVehicleInfo.portOfDestination);
@@ -67,6 +67,9 @@ const useCreateVehicleForm = (user: User) => {
             }
             if (createVehicleMedia.billOfLadingDocument) {
                 formData.append("billOfLadingDocument", createVehicleMedia.billOfLadingDocument, createVehicleMedia.billOfLadingDocument.name)
+            }
+            if (createVehicleMedia.swbReleaseDocument) {
+                formData.append("swbReleaseDocument", createVehicleMedia.swbReleaseDocument, createVehicleMedia.swbReleaseDocument.name)
             }
 
             setCreateVehicleLoading(true);

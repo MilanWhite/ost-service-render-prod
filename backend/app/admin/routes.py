@@ -300,6 +300,7 @@ def admin_create_vehicle(sub):
         bill_of_sale_document = request.files.get("billOfSaleDocument")
         title_document = request.files.get("titleDocument")
         bill_of_lading_document = request.files.get("billOfLadingDocument")
+        swb_release_document = request.files.get("swbReleaseDocument")
 
         if not all([vehicle_name, images]):
             return error_response(message="MissingFieldError", code=400)
@@ -376,13 +377,14 @@ def admin_create_vehicle(sub):
             add_file(video.filename, f"{folder_prefix}/videos/{video.filename.split('/')[-1]}", video)
 
         # upload all documents
-
         if (bill_of_sale_document):
             add_file(bill_of_sale_document.filename, f"{folder_prefix}/documents/{vehicle_name}_bill_of_sale_document", bill_of_sale_document)
         if (bill_of_lading_document):
             add_file(bill_of_lading_document.filename, f"{folder_prefix}/documents/{vehicle_name}_bill_of_lading_document", bill_of_lading_document)
         if (title_document):
             add_file(title_document.filename, f"{folder_prefix}/documents/{vehicle_name}_title_document", title_document)
+        if (swb_release_document):
+            add_file(swb_release_document.filename, f"{folder_prefix}/documents/{vehicle_name}_swb_release_document", swb_release_document)
 
         return success_response()
 

@@ -81,6 +81,8 @@ const CreateVehicleForm = ({ user, vehicleRefetch }: Props) => {
     const [titleDocument, setTitleDocument] = useState<File | null>(null);
     const [billOfLadingDocument, setBillOfLadingDocument] =
         useState<File | null>(null);
+    const [swbReleaseDocument, setSWBReleaseDocument] =
+        useState<File | null>(null);
 
     const [files, setFiles] = useState<File[]>([]);
     const [thumbnail, setThumbnail] = useState<File | null>(null);
@@ -119,6 +121,7 @@ const CreateVehicleForm = ({ user, vehicleRefetch }: Props) => {
             billOfSaleDocument: billOfSaleDocument,
             titleDocument: titleDocument,
             billOfLadingDocument: billOfLadingDocument,
+            swbReleaseDocument: swbReleaseDocument,
         };
 
         await createVehicle(
@@ -155,6 +158,15 @@ const CreateVehicleForm = ({ user, vehicleRefetch }: Props) => {
         const billOfLading = e.target.files && e.target.files[0];
         if (!billOfLading) return;
         setBillOfLadingDocument(billOfLading);
+        e.target.value = "";
+    };
+
+    const handleSWBReleaseUpload = (
+        e: React.ChangeEvent<HTMLInputElement>
+    ) => {
+        const swbRelease = e.target.files && e.target.files[0];
+        if (!swbRelease) return;
+        setSWBReleaseDocument(swbRelease);
         e.target.value = "";
     };
 
@@ -609,6 +621,37 @@ const CreateVehicleForm = ({ user, vehicleRefetch }: Props) => {
 
                                     <p className="text-sm text-gray-700">
                                         {billOfLadingDocument.name}
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="mb-4">
+                            <div>
+                                <label className="block mb-1 font-medium">
+                                    {t("AuthenticatedView.swb_release_document")}
+                                </label>
+                                <input
+                                    type="file"
+                                    accept=".pdf, .doc, .docx, .txt"
+                                    onChange={handleSWBReleaseUpload}
+                                    className="block w-full text-sm text-gray-700"
+                                />
+                            </div>
+                            {swbReleaseDocument && (
+                                <div className="flex my-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setSWBReleaseDocument(null);
+                                        }}
+                                        className="cursor-pointer text-red-700"
+                                    >
+                                        <XMarkIcon className="w-4" />
+                                    </button>
+
+                                    <p className="text-sm text-gray-700">
+                                        {swbReleaseDocument.name}
                                     </p>
                                 </div>
                             )}

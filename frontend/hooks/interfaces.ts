@@ -34,7 +34,7 @@ export interface Vehicle {
     vehicleBillOfSaleDocument?: string;
     vehicleTitleDocument?: string;
     vehicleBillOfLadingDocument?: string;
-
+    vehicleSWBReleaseDocument?: string;
 }
 
 export interface UseVehicleImagesResult {
