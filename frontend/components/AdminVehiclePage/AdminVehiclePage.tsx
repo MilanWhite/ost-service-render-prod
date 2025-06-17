@@ -35,8 +35,8 @@ const AdminVehiclePage = ({ vehicle: initial }: Props) => {
 
     const normName = (u: string) =>
         decodeURIComponent(u.split("/").pop()!.split("?")[0])
-          .replace(/\+/g, " ")
-          .toLowerCase();
+            .replace(/\+/g, " ")
+            .toLowerCase();
 
     // create vehicle File out of URL
     useEffect(() => {
@@ -77,28 +77,22 @@ const AdminVehiclePage = ({ vehicle: initial }: Props) => {
         };
     }, [initial.vehicleImages]);
 
-
     // determine existing & deleted files
     const { toAdd, toDelete } = useMemo(() => {
         const originalNames = new Set(
-          (initial.vehicleImages ?? []).map(normName)
-        );
-      
-        const add = imageFiles.filter(f => !originalNames.has(normName(f.name)));
-      
-        const del = (initial.vehicleImages ?? []).filter(
-          url => !imageFiles.some(f => normName(url) === normName(f.name))
+            (initial.vehicleImages ?? []).map(normName)
         );
 
-        console.log(originalNames)
-        console.log(add)
-        console.log(del)
+        const add = imageFiles.filter(
+            (f) => !originalNames.has(normName(f.name))
+        );
+
+        const del = (initial.vehicleImages ?? []).filter(
+            (url) => !imageFiles.some((f) => normName(url) === normName(f.name))
+        );
 
         return { toAdd: add, toDelete: del };
-      }, [imageFiles, initial.vehicleImages]);
-
-
-
+    }, [imageFiles, initial.vehicleImages]);
 
     const [saveError, setSaveError] = useState<string | null>(null);
 
@@ -531,9 +525,9 @@ const AdminVehiclePage = ({ vehicle: initial }: Props) => {
 
                         {/* Image Editor */}
 
-                        {isEditing && (
-                            <div className="border-t border-gray-200 lg:col-span-4">
-                                <div className="mt-4">
+                        <div className="border-t border-gray-200 lg:col-span-4 self-start">
+                            {isEditing && (
+                                <div className="mt-4 mb-8">
                                     <h3 className="text-lg font-medium text-gray-900">
                                         {t("AuthenticatedView.edit_images")}
                                     </h3>
@@ -545,64 +539,65 @@ const AdminVehiclePage = ({ vehicle: initial }: Props) => {
                                         disableThumbnailSelection
                                     />
                                 </div>
-                            </div>
-                        )}
-
-                        {/* Documents */}
-
-                        <div className="mt-8 border-t border-gray-200 pt-8 lg:col-span-4">
-                            <h3 className="text-lg font-medium text-gray-900">
-                                {t("AuthenticatedView.documents")}
-                            </h3>
-                            <div className="mt-4 space-y-4 text-sm font-medium">
-                                {vehicle.vehicleBillOfSaleDocument && (
-                                    <div>
-                                        <a
-                                            href={
-                                                vehicle.vehicleBillOfSaleDocument
-                                            }
-                                            target="_blank"
-                                            rel="noopener"
-                                            className="text-primary hover:text-primary-hover"
-                                        >
-                                            {t(
-                                                "AuthenticatedView.view_bill_of_sale"
-                                            )}
-                                        </a>
-                                    </div>
-                                )}
-                                {vehicle.vehicleTitleDocument && (
-                                    <div>
-                                        <a
-                                            href={vehicle.vehicleTitleDocument}
-                                            target="_blank"
-                                            rel="noopener"
-                                            className="text-primary hover:text-primary-hover"
-                                        >
-                                            {t(
-                                                "AuthenticatedView.view_title_document"
-                                            )}
-                                        </a>
-                                    </div>
-                                )}
-                                {vehicle.vehicleBillOfLandingDocument && (
-                                    <div>
-                                        <a
-                                            href={
-                                                vehicle.vehicleBillOfLandingDocument
-                                            }
-                                            target="_blank"
-                                            rel="noopener"
-                                            className="text-primary hover:text-primary-hover"
-                                        >
-                                            {t(
-                                                "AuthenticatedView.view_bill_of_landing"
-                                            )}
-                                        </a>
-                                    </div>
-                                )}
+                            )}
+                            <div className="mt-0 border-t border-gray-200 pt-8 ">
+                                <h3 className="text-lg font-medium text-gray-900">
+                                    {t("AuthenticatedView.documents")}
+                                </h3>
+                                <div className="mt-4 space-y-4 text-sm font-medium">
+                                    {vehicle.vehicleBillOfSaleDocument && (
+                                        <div>
+                                            <a
+                                                href={
+                                                    vehicle.vehicleBillOfSaleDocument
+                                                }
+                                                target="_blank"
+                                                rel="noopener"
+                                                className="text-primary hover:text-primary-hover"
+                                            >
+                                                {t(
+                                                    "AuthenticatedView.view_bill_of_sale"
+                                                )}
+                                            </a>
+                                        </div>
+                                    )}
+                                    {vehicle.vehicleTitleDocument && (
+                                        <div>
+                                            <a
+                                                href={
+                                                    vehicle.vehicleTitleDocument
+                                                }
+                                                target="_blank"
+                                                rel="noopener"
+                                                className="text-primary hover:text-primary-hover"
+                                            >
+                                                {t(
+                                                    "AuthenticatedView.view_title_document"
+                                                )}
+                                            </a>
+                                        </div>
+                                    )}
+                                    {vehicle.vehicleBillOfLandingDocument && (
+                                        <div>
+                                            <a
+                                                href={
+                                                    vehicle.vehicleBillOfLandingDocument
+                                                }
+                                                target="_blank"
+                                                rel="noopener"
+                                                className="text-primary hover:text-primary-hover"
+                                            >
+                                                {t(
+                                                    "AuthenticatedView.view_bill_of_landing"
+                                                )}
+                                            </a>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
+
+                        {/* Documents */}
                     </div>
                 </div>
             </div>
