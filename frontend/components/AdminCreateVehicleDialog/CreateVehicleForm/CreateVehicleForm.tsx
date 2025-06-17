@@ -79,7 +79,7 @@ const CreateVehicleForm = ({ user, vehicleRefetch }: Props) => {
         null
     );
     const [titleDocument, setTitleDocument] = useState<File | null>(null);
-    const [billOfLandingDocument, setBillOfLandingDocument] =
+    const [billOfLadingDocument, setBillOfLadingDocument] =
         useState<File | null>(null);
 
     const [files, setFiles] = useState<File[]>([]);
@@ -118,7 +118,7 @@ const CreateVehicleForm = ({ user, vehicleRefetch }: Props) => {
             videos: videos,
             billOfSaleDocument: billOfSaleDocument,
             titleDocument: titleDocument,
-            billOfLandingDocument: billOfLandingDocument,
+            billOfLadingDocument: billOfLadingDocument,
         };
 
         await createVehicle(
@@ -149,12 +149,12 @@ const CreateVehicleForm = ({ user, vehicleRefetch }: Props) => {
         e.target.value = "";
     };
 
-    const handleBillOfLandingUpload = (
+    const handleBillOfLadingUpload = (
         e: React.ChangeEvent<HTMLInputElement>
     ) => {
-        const billOfLanding = e.target.files && e.target.files[0];
-        if (!billOfLanding) return;
-        setBillOfLandingDocument(billOfLanding);
+        const billOfLading = e.target.files && e.target.files[0];
+        if (!billOfLading) return;
+        setBillOfLadingDocument(billOfLading);
         e.target.value = "";
     };
 
@@ -586,21 +586,21 @@ const CreateVehicleForm = ({ user, vehicleRefetch }: Props) => {
                         <div className="mb-4">
                             <div>
                                 <label className="block mb-1 font-medium">
-                                    {t("AuthenticatedView.bill_of_landing")}
+                                    {t("AuthenticatedView.bill_of_lading")}
                                 </label>
                                 <input
                                     type="file"
                                     accept=".pdf, .doc, .docx, .txt"
-                                    onChange={handleBillOfLandingUpload}
+                                    onChange={handleBillOfLadingUpload}
                                     className="block w-full text-sm text-gray-700"
                                 />
                             </div>
-                            {billOfLandingDocument && (
+                            {billOfLadingDocument && (
                                 <div className="flex my-2">
                                     <button
                                         type="button"
                                         onClick={() => {
-                                            setBillOfLandingDocument(null);
+                                            setBillOfLadingDocument(null);
                                         }}
                                         className="cursor-pointer text-red-700"
                                     >
@@ -608,7 +608,7 @@ const CreateVehicleForm = ({ user, vehicleRefetch }: Props) => {
                                     </button>
 
                                     <p className="text-sm text-gray-700">
-                                        {billOfLandingDocument.name}
+                                        {billOfLadingDocument.name}
                                     </p>
                                 </div>
                             )}

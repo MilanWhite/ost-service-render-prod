@@ -27,7 +27,7 @@ export interface CreateVehicleMedia {
     videos: File[];
     billOfSaleDocument: File | null;
     titleDocument: File | null;
-    billOfLandingDocument: File | null;
+    billOfLadingDocument: File | null;
 }
 
 const useCreateVehicleForm = (user: User) => {
@@ -65,8 +65,8 @@ const useCreateVehicleForm = (user: User) => {
             if (createVehicleMedia.titleDocument) {
                 formData.append("titleDocument", createVehicleMedia.titleDocument, createVehicleMedia.titleDocument.name)
             }
-            if (createVehicleMedia.billOfLandingDocument) {
-                formData.append("billOfLandingDocument", createVehicleMedia.billOfLandingDocument, createVehicleMedia.billOfLandingDocument.name)
+            if (createVehicleMedia.billOfLadingDocument) {
+                formData.append("billOfLadingDocument", createVehicleMedia.billOfLadingDocument, createVehicleMedia.billOfLadingDocument.name)
             }
 
             setCreateVehicleLoading(true);

@@ -1,4 +1,3 @@
-
 import Navbar from "../../components/Navbar";
 import LandingBanner from "../../components/LandingBanner";
 import HowItWorks from "../../components/HowItWorks";

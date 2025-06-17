@@ -298,10 +298,10 @@ i18n.use(LanguageDetector)
                         documents: "Documents",
                         bill_of_sale: "Bill of Sale",
                         title_document: "Title Document",
-                        bill_of_landing: "Bill of Landing",
+                        bill_of_lading: "Bill of Lading",
                         view_bill_of_sale: "View Bill of Sale",
                         view_title_document: "View Title Document",
-                        view_bill_of_landing: "View Bill of Landing",
+                        view_bill_of_lading: "View Bill of Lading",
 
                         // Delete vehicle dialog
                         delete_vehicle: "Delete Vehicle",
@@ -676,10 +676,10 @@ i18n.use(LanguageDetector)
                         documents: "Документы",
                         bill_of_sale: "Договор купли-продажи",
                         title_document: "Свидетельство о праве собственности",
-                        bill_of_landing: "Коносамент",
+                        bill_of_lading: "Транспортная накладная",
                         view_bill_of_sale: "Просмотреть договор купли-продажи",
                         view_title_document: "Просмотреть свидетельство",
-                        view_bill_of_landing: "Просмотреть коносамент",
+                        view_bill_of_lading: "Просмотреть транспортную накладную",
 
                         // Delete vehicle dialog
                         delete_vehicle: "Удалить автомобиль",
@@ -1056,10 +1056,10 @@ i18n.use(LanguageDetector)
                         documents: "Документи",
                         bill_of_sale: "Рахунок-фактура",
                         title_document: "Свідоцтво про право власності",
-                        bill_of_landing: "Транспортна накладна",
+                        bill_of_lading: "Транспортна накладна",
                         view_bill_of_sale: "Переглянути рахунок-фактуру",
                         view_title_document: "Переглянути свідоцтво",
-                        view_bill_of_landing: "Переглянути накладну",
+                        view_bill_of_lading: "Переглянути транспортну накладну",
 
                         // Delete vehicle dialog
                         delete_vehicle: "Видалити авто",

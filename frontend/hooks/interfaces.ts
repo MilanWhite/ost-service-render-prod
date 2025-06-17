@@ -33,7 +33,7 @@ export interface Vehicle {
 
     vehicleBillOfSaleDocument?: string;
     vehicleTitleDocument?: string;
-    vehicleBillOfLandingDocument?: string;
+    vehicleBillOfLadingDocument?: string;
 
 }
 

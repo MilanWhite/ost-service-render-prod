@@ -299,7 +299,7 @@ def admin_create_vehicle(sub):
 
         bill_of_sale_document = request.files.get("billOfSaleDocument")
         title_document = request.files.get("titleDocument")
-        bill_of_landing_document = request.files.get("billOfLandingDocument")
+        bill_of_lading_document = request.files.get("billOfLadingDocument")
 
         if not all([vehicle_name, images]):
             return error_response(message="MissingFieldError", code=400)
@@ -379,8 +379,8 @@ def admin_create_vehicle(sub):
 
         if (bill_of_sale_document):
             add_file(bill_of_sale_document.filename, f"{folder_prefix}/documents/{vehicle_name}_bill_of_sale_document", bill_of_sale_document)
-        if (bill_of_landing_document):
-            add_file(bill_of_landing_document.filename, f"{folder_prefix}/documents/{vehicle_name}_bill_of_landing_document", bill_of_landing_document)
+        if (bill_of_lading_document):
+            add_file(bill_of_lading_document.filename, f"{folder_prefix}/documents/{vehicle_name}_bill_of_lading_document", bill_of_lading_document)
         if (title_document):
             add_file(title_document.filename, f"{folder_prefix}/documents/{vehicle_name}_title_document", title_document)
 

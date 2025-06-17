@@ -577,18 +577,18 @@ const AdminVehiclePage = ({ vehicle: initial }: Props) => {
                                             </a>
                                         </div>
                                     )}
-                                    {vehicle.vehicleBillOfLandingDocument && (
+                                    {vehicle.vehicleBillOfLadingDocument && (
                                         <div>
                                             <a
                                                 href={
-                                                    vehicle.vehicleBillOfLandingDocument
+                                                    vehicle.vehicleBillOfLadingDocument
                                                 }
                                                 target="_blank"
                                                 rel="noopener"
                                                 className="text-primary hover:text-primary-hover"
                                             >
                                                 {t(
-                                                    "AuthenticatedView.view_bill_of_landing"
+                                                    "AuthenticatedView.view_bill_of_lading"
                                                 )}
                                             </a>
                                         </div>

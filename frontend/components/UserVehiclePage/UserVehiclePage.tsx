@@ -213,16 +213,16 @@ const UserVehiclePage = ({ vehicle }: Props) => {
                                 </a>
                             </div>
 
-                            {/* Bill of Landing # */}
+                            {/* Bill of Lading # */}
                             <div>
                                 <a
-                                    href={vehicle.vehicleBillOfLandingDocument}
+                                    href={vehicle.vehicleBillOfLadingDocument}
                                     target="_blank"
                                     rel="noopener"
                                     className="text-primary hover:text-primary-hover"
                                 >
                                     {t(
-                                        "AuthenticatedView.view_bill_of_landing"
+                                        "AuthenticatedView.view_bill_of_lading"
                                     )}
                                 </a>
                             </div>

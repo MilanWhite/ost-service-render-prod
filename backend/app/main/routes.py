@@ -235,7 +235,7 @@ def main_get_specific_vehicle(sub,vehicle_id):
 
         vehicle["vehicleTitleDocument"] = get_vehicle_document(sub, vehicle_id, "title_document")
 
-        vehicle["vehicleBillOfLandingDocument"] = get_vehicle_document(sub, vehicle_id, "bill_of_landing_document")
+        vehicle["vehicleBillOfLadingDocument"] = get_vehicle_document(sub, vehicle_id, "bill_of_lading_document")
 
         return success_response({"vehicle": vehicle})
 
