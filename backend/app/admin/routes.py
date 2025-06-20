@@ -525,7 +525,7 @@ def admin_fetch_dashboard():
         recent_users_query = (
             User.query
             .order_by(User.created_at.desc())
-            .limit(5)
+            .limit(4)
             .all()
         )
         recent_users = [
