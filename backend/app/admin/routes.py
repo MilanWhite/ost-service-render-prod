@@ -362,7 +362,7 @@ def admin_create_vehicle(sub):
         first_image.stream.seek(0)
         img = Image.open(first_image.stream)
 
-        MAX_SIZE = (250, 250)
+        MAX_SIZE = (400, 400)
         img.thumbnail(MAX_SIZE)
 
         thumbnail_buffer = BytesIO()
