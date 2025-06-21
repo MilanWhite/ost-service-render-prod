@@ -31,8 +31,7 @@ const AdminVehiclePage = ({ vehicle: initial }: Props) => {
 
     // image editor states
     const [imageFiles, setImageFiles] = useState<File[]>([]);
-    const [thumb] = useState<File | null>(null); // thumbnail picking disabled
-
+    const [thumbnail, setThumbnail] = useState<File | null>(null);
     const normName = (u: string) =>
         decodeURIComponent(u.split("/").pop()!.split("?")[0])
             .replace(/\+/g, " ")
@@ -100,7 +99,11 @@ const AdminVehiclePage = ({ vehicle: initial }: Props) => {
         setSaveError(null);
 
         try {
-            await saveChanges({ newImages: toAdd, deleteKeys: toDelete });
+            await saveChanges({
+                newImages: toAdd,
+                deleteKeys: toDelete,
+                newThumbnail: thumbnail,
+            });
 
             window.location.reload();
         } catch (err) {
@@ -616,9 +619,11 @@ const AdminVehiclePage = ({ vehicle: initial }: Props) => {
                                     <ZipImagePreviewer
                                         files={imageFiles}
                                         setFiles={setImageFiles}
-                                        thumbnail={thumb}
-                                        setThumbnail={() => {}}
-                                        disableThumbnailSelection
+                                        thumbnail={thumbnail}
+                                        setThumbnail={setThumbnail}
+                                        preferredThumbnailName={
+                                            vehicle.vehicleThumbnail
+                                        }
                                     />
                                 </div>
                             )}

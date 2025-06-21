@@ -6,6 +6,7 @@ import { useEditVehicle } from "../../hooks/useEditVehicle";
 import { Vehicle, translateStatus } from "../../hooks/interfaces";
 import { URLS } from "../../src/config/navigation";
 import ErrorBanner from "../ErrorBanner";
+import VehicleThumbnail from "../VehicleThumbnail";
 
 interface Props {
     vehicle: Vehicle;
@@ -46,13 +47,10 @@ const AdminVehicleItemCard = ({ vehicle: initial }: Props) => {
                 <div className="px-4 py-6 sm:px-6 lg:grid lg:grid-cols-12 lg:gap-x-8 lg:p-8">
                     {/* LEFT: image + basic info */}
                     <div className="sm:flex lg:col-span-5">
-                        <img
+                        <VehicleThumbnail
+                            mobileSrc={vehicle.vehicleThumbnailMobile ?? ""}
+                            desktopSrc={vehicle.vehicleThumbnail ?? ""}
                             alt={vehicle.vehicle_name}
-                            src={
-                                vehicle.vehicleThumbnail
-                                    ? vehicle.vehicleThumbnail
-                                    : undefined
-                            }
                             className="aspect-square w-full shrink-0 rounded-lg object-cover sm:size-40"
                         />
 
@@ -67,7 +65,7 @@ const AdminVehicleItemCard = ({ vehicle: initial }: Props) => {
                                         value={vehicle.vehicle_name}
                                         onChange={handleChange("vehicle_name")}
                                     />
-                                    
+
                                     <label className="block text-sm font-medium text-gray-700 mt-4">
                                         {t("AuthenticatedView.price_delivery")}
                                     </label>

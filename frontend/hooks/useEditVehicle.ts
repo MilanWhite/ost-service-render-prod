@@ -6,6 +6,7 @@ import { CanceledError } from "axios";
 export interface EditExtras {
     newImages?: File[];
     deleteKeys?: string[];
+    newThumbnail?: File | null;
 }
 
 export interface EditVehicleHook {
@@ -59,6 +60,9 @@ export function useEditVehicle(
                 extras?.deleteKeys?.forEach((k) =>
                     form.append("delete_keys[]", k)
                 );
+                if (extras?.newThumbnail) {
+                    form.append("new_thumbnail", extras?.newThumbnail)
+                }
 
                 const { data } = await apiClient.put(
                     `/api/admin/vehicles/edit/${vehicle.id}/${

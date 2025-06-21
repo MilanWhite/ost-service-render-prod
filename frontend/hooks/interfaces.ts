@@ -34,6 +34,7 @@ export interface Vehicle {
     vehicleImages?: string[];
     vehicleVideos?: string[];
     vehicleThumbnail?: string;
+    vehicleThumbnailMobile?: string;
 
     vehicleBillOfSaleDocument?: string;
     vehicleTitleDocument?: string;
@@ -47,13 +48,6 @@ export interface UseVehicleImagesResult {
     vehicleImagesLoading: boolean;
     vehicleImagesError: string | null;
     vehicleImagesRefetch: () => Promise<void>;
-}
-
-export interface UseVehicleThumbnailResult {
-    vehicleThumbnail: string | null;
-    vehicleThumbnailLoading: boolean;
-    vehicleThumbnailError: string | null;
-    vehicleThumbnailRefetch: () => Promise<void>;
 }
 
 export interface Meta {

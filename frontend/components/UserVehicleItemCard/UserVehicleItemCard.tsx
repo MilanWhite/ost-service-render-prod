@@ -3,6 +3,8 @@ import { translateStatus, Vehicle } from "../../hooks/interfaces";
 import { URLS } from "../../src/config/navigation";
 import { useTranslation } from "react-i18next";
 
+import VehicleThumbnail from "../VehicleThumbnail";
+
 interface Props {
     vehicle: Vehicle;
 }
@@ -23,13 +25,10 @@ const UserVehicleItemCard = ({ vehicle }: Props) => {
                 <div className="px-4 py-6 sm:px-6 lg:grid lg:grid-cols-12 lg:gap-x-8 lg:p-8">
                     {/* LEFT: image + basic info */}
                     <div className="sm:flex lg:col-span-5">
-                        <img
+                        <VehicleThumbnail
+                            mobileSrc={vehicle.vehicleThumbnailMobile ?? ""}
+                            desktopSrc={vehicle.vehicleThumbnail ?? ""}
                             alt={vehicle.vehicle_name}
-                            src={
-                                vehicle.vehicleThumbnail
-                                    ? vehicle.vehicleThumbnail
-                                    : undefined
-                            }
                             className="aspect-square w-full shrink-0 rounded-lg object-cover sm:size-40"
                         />
 

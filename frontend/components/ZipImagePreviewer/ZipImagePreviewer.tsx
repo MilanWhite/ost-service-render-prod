@@ -9,6 +9,8 @@ interface Props {
     thumbnail: File | null;
     setThumbnail: Dispatch<SetStateAction<File | null>>;
     disableThumbnailSelection?: boolean;
+
+    preferredThumbnailName?: string;
 }
 
 export default function ZipImagePreviewer({
@@ -17,6 +19,7 @@ export default function ZipImagePreviewer({
     thumbnail,
     setThumbnail,
     disableThumbnailSelection = false,
+    preferredThumbnailName,
 }: Props) {
     const { t } = useTranslation();
 
@@ -24,26 +27,23 @@ export default function ZipImagePreviewer({
     const key = (f: File) => f.name + f.lastModified;
     const dragIndex = useRef<number | null>(null);
 
-    // if a filename collides, append (n)
     function makeUniqueName(name: string, existingNames: Set<string>): string {
         const match = name.match(/^(.*?)(\.[^.]+)?$/)!;
         const base = match[1];
         const ext = match[2] || "";
         let candidate = name;
         let i = 1;
-        while (existingNames.has(candidate)) {
+        while (existingNames.has(candidate.toLowerCase())) {
             candidate = `${base}(${i++})${ext}`;
         }
         existingNames.add(candidate.toLowerCase());
         return candidate;
     }
 
-    // handle both image files and .zip uploads
     const handleSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const picked = e.target.files?.[0];
         if (!picked) return;
 
-        // current names in state
         const existing = new Set(files.map((f) => f.name.toLowerCase()));
         let incoming: File[] = [];
 
@@ -72,7 +72,6 @@ export default function ZipImagePreviewer({
         } else if (
             /\.(png|jpe?g|jfif|gif|webp|bmp|svg|heic|heif)$/i.test(picked.name)
         ) {
-            // single image — rename if needed
             const uniqueName = makeUniqueName(picked.name, existing);
             incoming = [new File([picked], uniqueName, { type: picked.type })];
         } else {
@@ -81,19 +80,11 @@ export default function ZipImagePreviewer({
             return;
         }
 
-        // merge into state, set first as thumbnail if none
-        setFiles((prev) => {
-            const next = [...prev, ...incoming];
-            if (!thumbnail && next.length) {
-                setThumbnail(next[0]);
-            }
-            return next;
-        });
+        setFiles((prev) => [...prev, ...incoming]);
 
         e.target.value = "";
     };
 
-    // keep urlMap in sync with files
     useEffect(() => {
         const m = new Map<string, string>();
         files.forEach((f) => m.set(key(f), URL.createObjectURL(f)));
@@ -101,12 +92,11 @@ export default function ZipImagePreviewer({
         return () => m.forEach((u) => URL.revokeObjectURL(u));
     }, [files]);
 
-    // remove one File from state
     const removeFile = (f: File) => {
         setFiles((prev) => {
             const next = prev.filter((x) => key(x) !== key(f));
             if (thumbnail && key(thumbnail) === key(f)) {
-                setThumbnail(next[0] ?? null);
+                setThumbnail(null);
             }
             return next;
         });
@@ -114,7 +104,6 @@ export default function ZipImagePreviewer({
         if (url) URL.revokeObjectURL(url);
     };
 
-    // reorder on drag/drop
     const reorder = (from: number, to: number) => {
         if (from === to) return;
         setFiles((prev) => {
@@ -138,8 +127,10 @@ export default function ZipImagePreviewer({
                 <div className="relative max-h-[32rem] overflow-y-auto border border-gray-200 rounded-lg p-4 shadow-sm">
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                         {files.map((file, idx) => {
-                            const isThumb =
-                                thumbnail && key(file) === key(thumbnail);
+                            const isThumb = thumbnail
+                                ? key(file) === key(thumbnail)
+                                : preferredThumbnailName?.toLowerCase() ===
+                                  file.name.toLowerCase();
                             return (
                                 <div
                                     key={key(file)}
@@ -173,7 +164,7 @@ export default function ZipImagePreviewer({
                                         <XMarkIcon className="w-3" />
                                     </button>
 
-                                    {/* pick thumbnail if possible */}
+                                    {/* pick thumbnail */}
                                     <button
                                         type="button"
                                         onClick={() => {

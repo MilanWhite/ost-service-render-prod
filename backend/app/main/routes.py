@@ -2,117 +2,10 @@ from flask import Blueprint, request
 from sqlalchemy import or_
 
 from app.models import User, Vehicle
-from app.utils import error_response, success_response
+from app.utils import success_response, error_response, get_vehicle_thumbnail_filename, check_sub, get_vehicle_thumbnails, get_all_vehicle_images, get_vehicle_document
 from app.decorators import cognito_auth_required
-from app.cognito import s3_client
-from app.config import Config
 
 main_bp = Blueprint('main', __name__)
-
-def check_sub(user_groups, user_sub, sub):
-
-    if "Admin" not in user_groups and sub != user_sub:
-        return error_response(message="Forbidden", code=403)
-
-def get_vehicle_thumbnail(sub: str, vehicle_id: str) -> str | None:
-
-    resp = s3_client.list_objects_v2(
-        Bucket=Config.S3_BUCKET,
-        Prefix=f"{sub}/{vehicle_id}/thumbnail/",
-        MaxKeys=1,
-    )
-
-    keys = [
-        obj["Key"]
-        for obj in resp.get("Contents", [])
-        if not obj["Key"].endswith("/")
-    ]
-
-    if not keys:
-        return None
-
-    return s3_client.generate_presigned_url(
-        ClientMethod="get_object",
-        Params={"Bucket": Config.S3_BUCKET, "Key": keys[0]},
-        ExpiresIn=3600,
-    )
-
-def get_all_vehicle_images(sub,vehicle_id):
-
-    try:
-
-        resp = s3_client.list_objects_v2(
-            Bucket=Config.S3_BUCKET,
-            Prefix=f"{sub}/{vehicle_id}/",
-        )
-
-        img_keys = [
-            obj["Key"]
-            for obj in resp.get("Contents", [])
-            if not obj["Key"].endswith("/") and "thumbnail" not in obj["Key"] and "videos" not in obj["Key"] and "documents" not in obj["Key"]
-        ]
-
-        img_urls = [
-            s3_client.generate_presigned_url(
-                ClientMethod="get_object",
-                Params={"Bucket": Config.S3_BUCKET, "Key": img_key},
-                ExpiresIn=3600
-            )
-            for img_key in img_keys
-        ]
-
-        vid_keys = [
-            obj["Key"]
-            for obj in resp.get("Contents", [])
-            if not obj["Key"].endswith("/") and "videos" in obj["Key"]
-        ]
-
-        vid_urls = []
-        if vid_keys:
-            vid_urls = [
-                s3_client.generate_presigned_url(
-                    ClientMethod="get_object",
-                    Params={"Bucket": Config.S3_BUCKET, "Key": vid_key},
-                    ExpiresIn=3600
-                )
-                for vid_key in vid_keys
-            ]
-
-        return img_urls, vid_urls
-
-    except Exception as e:
-        print(str(e))
-        return error_response(message=str(e), code=500)
-
-def get_vehicle_document(sub, vehicle_id, document_type):
-    try:
-
-        resp = s3_client.list_objects_v2(
-            Bucket=Config.S3_BUCKET,
-            Prefix=f"{sub}/{vehicle_id}/documents/",
-        )
-
-        documents = [
-            obj["Key"]
-            for obj in resp.get("Contents", [])
-            if not obj["Key"].endswith("/") and document_type in obj["Key"]
-        ]
-
-        document_url = ""
-        if documents:
-            document_url = s3_client.generate_presigned_url(
-                    ClientMethod="get_object",
-                    Params={"Bucket": Config.S3_BUCKET, "Key": documents[0]},
-                    ExpiresIn=3600
-                )
-
-        return document_url
-
-    except Exception as e:
-        print(e)
-        return error_response(message=str(e), code=500)
-
-
 
 # requires pagination
 @main_bp.route("/<string:sub>/vehicles", methods=["GET"])
@@ -167,7 +60,7 @@ def main_get_user_vehicles(sub):
         # get all vehicle thumbnails
 
         for vehicle in vehicles_list:
-            vehicle["vehicleThumbnail"] = get_vehicle_thumbnail(vehicle["cognito_sub"], vehicle["id"])
+            vehicle["vehicleThumbnail"], vehicle["vehicleThumbnailMobile"] = get_vehicle_thumbnails(vehicle["cognito_sub"], vehicle["id"])
 
         return success_response({
             "vehicles": vehicles_list,
@@ -230,6 +123,8 @@ def main_get_specific_vehicle(sub,vehicle_id):
         vehicle = vehicle.to_dict()
 
         vehicle["vehicleImages"], vehicle["vehicleVideos"] = get_all_vehicle_images(sub, vehicle_id)
+
+        vehicle["vehicleThumbnail"] = get_vehicle_thumbnail_filename(sub, vehicle_id)
 
         vehicle["vehicleBillOfSaleDocument"] = get_vehicle_document(sub, vehicle_id, "bill_of_sale_document")
 

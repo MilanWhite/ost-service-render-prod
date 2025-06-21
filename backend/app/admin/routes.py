@@ -1,24 +1,15 @@
-import os
-from io import BytesIO
 from flask import Blueprint, json, request
-from werkzeug.utils import secure_filename
 from app.decorators import cognito_auth_required
-from app.utils import error_response, success_response
+from app.utils import success_response, error_response, add_file, create_thumbnail, get_vehicle_thumbnail_filename, get_vehicle_thumbnails, get_all_vehicle_images
 from app.cognito import cognito_client, s3_client
 from app.config import Config
 from app.models import User, Vehicle
-from PIL import Image
 from app.extensions import db
-from app.main.routes import get_all_vehicle_images, get_vehicle_thumbnail
+from werkzeug.utils import secure_filename
 
 from urllib.parse import unquote, urlparse
 
 admin_bp = Blueprint('admin', __name__)
-
-def get_extension(image):
-    original_image_name = secure_filename(image.filename)
-    ext = os.path.splitext(original_image_name)[1]
-    return ext
 
 @admin_bp.route("/users/create-user", methods=["POST"])
 @cognito_auth_required(["Admin"])
@@ -150,7 +141,6 @@ def admin_get_all_users():
         print(str(e))
         return error_response(message=str(e), code=500)
 
-
 @admin_bp.route("/users/<string:sub>/get-user", methods=["GET"])
 @cognito_auth_required(["Admin"])
 def admin_get_specific_user(sub):
@@ -180,6 +170,8 @@ def admin_edit_vehicle_with_images(vehicle_id, on_singular_vehicle_page):
     payload = json.loads(request.form["payload"]) # trying to do payload from now on
     new_files   = request.files.getlist("new_images")
     delete_keys = request.form.getlist("delete_keys[]")
+
+    new_thumbnail = request.files.get("new_thumbnail")
 
     allowed = {
         "vehicle_name": str,
@@ -231,6 +223,30 @@ def admin_edit_vehicle_with_images(vehicle_id, on_singular_vehicle_page):
             ExtraArgs={"ContentType": f.mimetype},
         )
 
+    if new_thumbnail:
+
+        folder_prefix = f"{vehicle.cognito_sub}/{vehicle_id}"
+
+        resp = s3_client.list_objects_v2(
+            Bucket=Config.S3_BUCKET,
+            Prefix=f"{folder_prefix}thumbnail",
+        )
+
+        objects = [
+            {"Key": obj["Key"]}
+            for obj in resp.get("Contents", [])
+            if not obj["Key"].endswith("/")
+        ]
+
+        if objects:
+            s3_client.delete_objects(
+                Bucket=Config.S3_BUCKET,
+                Delete={"Objects": objects},
+            )
+
+        create_thumbnail(new_thumbnail, folder_prefix, False)
+        create_thumbnail(new_thumbnail, folder_prefix, True)
+
     # rebuild vehicle
     v_dict = vehicle.to_dict()
     v_dict["vehicleImages"] = []
@@ -238,41 +254,16 @@ def admin_edit_vehicle_with_images(vehicle_id, on_singular_vehicle_page):
     v_dict["vehicleThumbnail"] = ""
 
     if on_singular_vehicle_page:
-        images, videos = get_all_vehicle_images(
-            vehicle.cognito_sub, vehicle_id
-        )
+        images, videos = get_all_vehicle_images(vehicle.cognito_sub, vehicle_id)
         v_dict["vehicleImages"] = images
         v_dict["vehicleVideos"] = videos
+
+        v_dict["vehicleThumbnail"] = get_vehicle_thumbnail_filename(vehicle.cognito_sub, vehicle_id)
     else:
-        v_dict["vehicleThumbnail"] = get_vehicle_thumbnail(
-            vehicle.cognito_sub, vehicle_id
-        )
+
+        v_dict["vehicleThumbnail"], v_dict["vehicleThumbnailMobile"] = get_vehicle_thumbnails(vehicle.cognito_sub, vehicle_id)
 
     return success_response({"vehicle": v_dict})
-
-
-def add_file(filename, key, file):
-
-    original_name = secure_filename(filename)
-    # ext = os.path.splitext(original_name)[1]
-
-    # change content disposition to allow for in browser viewing
-    content_type = getattr(file, "mimetype", None) or "application/octet-stream"
-    content_disposition = f'inline; filename="{original_name}"'
-
-    try:
-        s3_client.upload_fileobj(
-            Fileobj=file,
-            Bucket=Config.S3_BUCKET,
-            Key=f"{key}",
-            ExtraArgs={
-                "ContentType": content_type,
-                "ContentDisposition": content_disposition,
-            },
-        )
-    except Exception:
-        return error_response(message="Upload failed", code=500)
-
 
 @admin_bp.route("/vehicles/<string:sub>/create-vehicle", methods=["POST"])
 @cognito_auth_required(["Admin"])
@@ -350,54 +341,32 @@ def admin_create_vehicle(sub):
 
         folder_prefix = f"{sub}/{new_vehicle.id}"
 
-        # create thumbnail
-
         if not thumbnail:
             thumbnail = images[0]
 
-        first_image = thumbnail
+        # Mk desktop thumbnail
+        create_thumbnail(thumbnail, folder_prefix, False)
 
-        ext = get_extension(first_image)
-
-        first_image.stream.seek(0)
-        img = Image.open(first_image.stream)
-
-        MAX_SIZE = (400, 400)
-        img.thumbnail(MAX_SIZE)
-
-        thumbnail_buffer = BytesIO()
-        img_format = img.format or 'JPEG'
-        img.save(thumbnail_buffer, format=img_format)
-        thumbnail_buffer.seek(0)
-
-        try:
-            s3_client.upload_fileobj(
-                Fileobj=thumbnail_buffer,
-                Bucket=Config.S3_BUCKET,
-                Key=f"{folder_prefix}/thumbnail/thumbnail{ext}"
-            )
-        except Exception as e:
-            return error_response(message="Thumbnail upload failed", code=500)
-
-        first_image.stream.seek(0)
+        # Mk mobile thumbnail
+        create_thumbnail(thumbnail, folder_prefix, True)
 
         # upload all images
         for image in images:
-            add_file(image.filename, f"{folder_prefix}/{image.filename.split('/')[-1]}", image)
+            add_file(image.filename, f"{folder_prefix}/{secure_filename(image.filename.split('/')[-1])}", image)
 
         #upload all videos
         for video in videos:
-            add_file(video.filename, f"{folder_prefix}/videos/{video.filename.split('/')[-1]}", video)
+            add_file(video.filename, f"{folder_prefix}/videos/{secure_filename(video.filename.split('/')[-1])}", video)
 
         # upload all documents
         if (bill_of_sale_document):
-            add_file(bill_of_sale_document.filename, f"{folder_prefix}/documents/{vehicle_name}_bill_of_sale_document", bill_of_sale_document)
+            add_file(bill_of_sale_document.filename, f"{folder_prefix}/documents/{secure_filename(vehicle_name)}_bill_of_sale_document", bill_of_sale_document)
         if (bill_of_lading_document):
-            add_file(bill_of_lading_document.filename, f"{folder_prefix}/documents/{vehicle_name}_bill_of_lading_document", bill_of_lading_document)
+            add_file(bill_of_lading_document.filename, f"{folder_prefix}/documents/{secure_filename(vehicle_name)}_bill_of_lading_document", bill_of_lading_document)
         if (title_document):
-            add_file(title_document.filename, f"{folder_prefix}/documents/{vehicle_name}_title_document", title_document)
+            add_file(title_document.filename, f"{folder_prefix}/documents/{secure_filename(vehicle_name)}_title_document", title_document)
         if (swb_release_document):
-            add_file(swb_release_document.filename, f"{folder_prefix}/documents/{vehicle_name}_swb_release_document", swb_release_document)
+            add_file(swb_release_document.filename, f"{folder_prefix}/documents/{secure_filename(vehicle_name)}_swb_release_document", swb_release_document)
 
         return success_response()
 
@@ -521,7 +490,6 @@ def admin_fetch_dashboard():
         for k, event in enumerate(activity_feed):
             event["id"] = k
 
-        # recent users (last 5)
         recent_users_query = (
             User.query
             .order_by(User.created_at.desc())
