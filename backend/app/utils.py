@@ -57,9 +57,9 @@ def create_thumbnail(thumbnail, folder_prefix, is_mobile):
     img = Image.open(thumbnail.stream)
 
     if is_mobile:
-        MAX_SIZE = (600, 600)
+        MAX_SIZE = (1080, 1080)
     else:
-        MAX_SIZE = (250, 250)
+        MAX_SIZE = (350, 350)
 
     img.thumbnail(MAX_SIZE)
 
