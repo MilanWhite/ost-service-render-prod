@@ -22,8 +22,9 @@ def main_get_user_vehicles(sub):
         vehicle_search = request.args.get("vehicle_search", "", type=str)
         vehicle_filter_by = request.args.get("vehicle_filter_by", None, type=str)
 
-        vehicles = Vehicle.query.filter_by(cognito_sub=sub)
+        vehicles = Vehicle.query.filter_by(cognito_sub=sub).order_by(Vehicle.created_at.desc())
         # filter vehicels by search
+
         if vehicle_search:
             # whitelist to avoid injection
             allowed = {
