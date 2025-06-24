@@ -17,7 +17,7 @@ def main_get_user_vehicles(sub):
         check_sub(request.user["cognito:groups"], request.user["sub"], sub)
 
         page = request.args.get("page", 1, type=int)
-        per_page = request.args.get("per_page", 5, type=int)
+        per_page = request.args.get("per_page", 10, type=int)
 
         vehicle_search = request.args.get("vehicle_search", "", type=str)
         vehicle_filter_by = request.args.get("vehicle_filter_by", None, type=str)

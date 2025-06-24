@@ -41,7 +41,7 @@ const AdminViewUserVehicles = () => {
         vehiclesError,
         setPage,
         vehicleRefetch,
-    } = useGetVehicles(sub!, 5, { vehicleSearch, vehicleFilterBy });
+    } = useGetVehicles(sub!, 10, { vehicleSearch, vehicleFilterBy });
 
     if (!sub) {
         return <Navigate to="/404" replace />;

@@ -24,7 +24,7 @@ const UserViewUserVehicles = () => {
     const { user } = useAuthenticator((ctx) => [ctx.user]);
 
     const { vehicles, meta, vehiclesLoading, vehiclesError, setPage } =
-        useGetVehicles(user.userId, 5, { vehicleSearch, vehicleFilterBy });
+        useGetVehicles(user.userId, 10, { vehicleSearch, vehicleFilterBy });
 
     return (
         <>
