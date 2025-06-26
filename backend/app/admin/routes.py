@@ -171,6 +171,8 @@ def admin_edit_vehicle_with_images(vehicle_id, on_singular_vehicle_page):
     new_files   = request.files.getlist("new_images")
     delete_keys = request.form.getlist("delete_keys[]")
 
+    new_image_order = request.form.getlist("image_order[]")
+
     new_thumbnail = request.files.get("new_thumbnail")
 
     allowed = {
@@ -198,6 +200,10 @@ def admin_edit_vehicle_with_images(vehicle_id, on_singular_vehicle_page):
     for field, cast in allowed.items():
         if field in payload:
             setattr(vehicle, field, cast(payload[field]))
+
+    if vehicle.image_order != new_image_order:
+        setattr(vehicle, "image_order", new_image_order)
+
     db.session.commit()
 
     # delete using url or key (if provided)
@@ -331,7 +337,9 @@ def admin_create_vehicle(sub):
             vin=vin,
             powertrain=powertrain,
             model=model,
-            color=color
+            color=color,
+
+            image_order=[secure_filename(image.filename.split('/')[-1]) for image in images]
         )
 
         db.session.add(new_vehicle)

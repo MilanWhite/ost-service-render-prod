@@ -167,8 +167,7 @@ def get_vehicle_thumbnails(sub: str, vehicle_id: str):
 
     return presign(regular_key), presign(mobile_key)
 
-def get_all_vehicle_images(sub,vehicle_id):
-
+def get_all_vehicle_images(sub, vehicle_id, image_order=[]):
     try:
 
         resp = s3_client.list_objects_v2(
@@ -182,14 +181,31 @@ def get_all_vehicle_images(sub,vehicle_id):
             if not obj["Key"].endswith("/") and "thumbnail" not in obj["Key"] and "videos" not in obj["Key"] and "documents" not in obj["Key"]
         ]
 
-        img_urls = [
-            s3_client.generate_presigned_url(
-                ClientMethod="get_object",
-                Params={"Bucket": Config.S3_BUCKET, "Key": img_key},
-                ExpiresIn=3600
-            )
-            for img_key in img_keys
-        ]
+
+        if not image_order:
+
+            img_urls = [
+                s3_client.generate_presigned_url(
+                    ClientMethod="get_object",
+                    Params={"Bucket": Config.S3_BUCKET, "Key": img_key},
+                    ExpiresIn=3600
+                )
+                for img_key in img_keys
+            ]
+        else:
+            name_to_key = {
+                img_key.split("/")[-1]: img_key
+                for img_key in img_keys
+            }
+            img_urls = [
+                s3_client.generate_presigned_url(
+                    ClientMethod="get_object",
+                    Params={"Bucket": Config.S3_BUCKET, "Key": name_to_key[name]},
+                    ExpiresIn=3600,
+                )
+                for name in image_order
+                if name in name_to_key
+            ]
 
         vid_keys = [
             obj["Key"]

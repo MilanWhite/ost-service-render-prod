@@ -1,4 +1,6 @@
 from datetime import datetime, timezone
+
+from sqlalchemy import ARRAY, TEXT
 from app.extensions import db
 
 class User(db.Model):
@@ -61,6 +63,12 @@ class Vehicle(db.Model):
     delivery_address    = db.Column(db.Text)
     receiver_id         = db.Column(db.String(255))
 
+    image_order = db.Column(
+        ARRAY(TEXT),
+        nullable=False,
+        default=list,
+    )
+
     owner = db.relationship("User", back_populates="vehicles")
 
     def to_dict(self):
@@ -85,4 +93,5 @@ class Vehicle(db.Model):
             "port_of_destination":  self.port_of_destination,
             "delivery_address":     self.delivery_address,
             "receiver_id":          self.receiver_id,
+            "image_order":          self.image_order,
         }

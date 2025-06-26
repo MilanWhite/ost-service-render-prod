@@ -123,7 +123,9 @@ def main_get_specific_vehicle(sub,vehicle_id):
 
         vehicle = vehicle.to_dict()
 
-        vehicle["vehicleImages"], vehicle["vehicleVideos"] = get_all_vehicle_images(sub, vehicle_id)
+        image_order = vehicle["image_order"] or []
+
+        vehicle["vehicleImages"], vehicle["vehicleVideos"] = get_all_vehicle_images(sub, vehicle_id, image_order=image_order)
 
         vehicle["vehicleThumbnail"] = get_vehicle_thumbnail_filename(sub, vehicle_id)
 

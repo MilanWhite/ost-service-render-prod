@@ -7,6 +7,7 @@ export interface EditExtras {
     newImages?: File[];
     deleteKeys?: string[];
     newThumbnail?: File | null;
+    imageOrder?: string[];
 }
 
 export interface EditVehicleHook {
@@ -57,6 +58,10 @@ export function useEditVehicle(
                 extras?.newImages?.forEach((file) =>
                     form.append("new_images", file, file.name)
                 );
+                extras?.imageOrder?.forEach(name =>
+                    form.append("image_order[]", name)
+                );
+
                 extras?.deleteKeys?.forEach((k) =>
                     form.append("delete_keys[]", k)
                 );

@@ -31,11 +31,10 @@ const AdminVehiclePage = ({ vehicle: initial }: Props) => {
 
     // image editor states
     const [imageFiles, setImageFiles] = useState<File[]>([]);
+
     const [thumbnail, setThumbnail] = useState<File | null>(null);
     const normName = (u: string) =>
         decodeURIComponent(u.split("/").pop()!.split("?")[0])
-            .replace(/\+/g, " ")
-            .toLowerCase();
 
     // create vehicle File out of URL
     useEffect(() => {
@@ -103,6 +102,7 @@ const AdminVehiclePage = ({ vehicle: initial }: Props) => {
                 newImages: toAdd,
                 deleteKeys: toDelete,
                 newThumbnail: thumbnail,
+                imageOrder: imageFiles.map((imageFile) => imageFile.name),
             });
 
             window.location.reload();
