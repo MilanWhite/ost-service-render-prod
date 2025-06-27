@@ -7,7 +7,7 @@ const InfoSectionRightImage = () => {
     const { t } = useTranslation();
 
     return (
-        <div className="overflow-hidden bg-white pt-24 sm:pt-32">
+        <div className="overflow-hidden pt-6 sm:pt-12">
             <div className="mx-auto max-w-7xl px-6 lg:px-8">
                 <div className="mx-auto grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 sm:gap-y-20 lg:mx-0 lg:max-w-none lg:grid-cols-2 lg:items-start">
                     <div className="lg:pt-4 lg:pr-4">
