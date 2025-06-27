@@ -7,7 +7,6 @@ const LandingCTA = () => {
     const { t } = useTranslation();
 
     return (
-        <div className="py-4 md:p-10">
             <div className="mx-auto max-w-7xl px-6 py-24 sm:py-32 lg:px-8 ">
                 <h2 className="max-w-2xl text-4xl font-semibold text-balance text-white sm:text-5xl">
                     {t("HomePage.landing_cta_title")}
@@ -26,7 +25,6 @@ const LandingCTA = () => {
                     </Link>
                 </div>
             </div>
-        </div>
     );
 };
 

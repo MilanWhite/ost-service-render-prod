@@ -6,7 +6,7 @@ import LandingCTA from "./LandingCTA";
 const LandingBanner: React.FC = () => {
     return (
         <div
-            className="relative lg:h-[70vh] bg-cover bg-center"
+            className="relative lg:h-[72vh] bg-cover bg-center"
             style={{ backgroundImage: `url(${LandingBannerImage})` }}
         >
             <div className="absolute inset-0 z-10 bg-gradient-to-r from-black via-primary-dark/75 lg:via-primary/30 to-primary/50 lg:to-transparent" />
