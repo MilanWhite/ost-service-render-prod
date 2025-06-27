@@ -72,6 +72,8 @@ i18n.use(LanguageDetector)
                         auction_experience_text:
                             "Leveraging extensive experience in the vehicle auction industry, OST Services expertly manages auction processes from start to finish. We handle bidding, paperwork, and logistics efficiently, ensuring your experience is always hassle-free.",
 
+                        our_auction_partners: "Our Auction Partners",
+
                         //  Feature cards
                         auto_auctions_title: "Auto Auctions",
                         auto_auctions_text:
@@ -460,6 +462,8 @@ i18n.use(LanguageDetector)
                         auction_experience_text:
                             "Имея большой опыт в автомобильных аукционах, OST Services полностью сопровождает клиента на всех этапах - от участия в торгах до оформления документов и логистики. Всё просто и без лишних хлопот.",
 
+                        our_auction_partners: "Наши партнёры по аукционам",
+                        
                         //  Feature cards
                         auto_auctions_title: "Автоаукционы",
                         auto_auctions_text:
@@ -849,7 +853,9 @@ i18n.use(LanguageDetector)
                         auction_experience_title: "Досвід в аукціонах",
                         auction_experience_text:
                             "Завдяки багаторічному досвіду OST Services професійно супроводжує вас в процесі участі в аукціонах - від ставки до логістики. Без зайвого клопоту.",
-
+                        
+                        our_auction_partners: "Наші партнери з аукціонів",
+                        
                         //  Feature cards
                         auto_auctions_title: "Автоаукціони",
                         auto_auctions_text:
