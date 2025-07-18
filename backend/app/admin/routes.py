@@ -8,8 +8,11 @@ from app.extensions import db
 from werkzeug.utils import secure_filename
 
 from urllib.parse import unquote, urlparse
+from vpic import Client
 
 admin_bp = Blueprint('admin', __name__)
+
+vpic = Client()
 
 @admin_bp.route("/users/create-user", methods=["POST"])
 @cognito_auth_required(["Admin"])
@@ -270,6 +273,32 @@ def admin_edit_vehicle_with_images(vehicle_id, on_singular_vehicle_page):
         v_dict["vehicleThumbnail"], v_dict["vehicleThumbnailMobile"] = get_vehicle_thumbnails(vehicle.cognito_sub, vehicle_id)
 
     return success_response({"vehicle": v_dict})
+
+@admin_bp.post("/vehicles/decode-vin/<string:vin>")
+def decode_vin(vin: str):
+
+    raw = vpic.decode_vin(vin, flatten=True)   # returns a dict
+    fuel_primary   = raw.get("FuelTypePrimary", "").lower()
+    fuel_secondary = raw.get("FuelTypeSecondary", "").lower()
+
+    def classify(pt: str, st: str = "") -> str:
+        txt = f"{pt} {st}"
+        if "electric" in txt or "fuel cell" in txt:
+            if "gas" in txt or "diesel" in txt or "hybrid" in txt:
+                return "Hybrid"
+            return "Electric"
+        return "Gas"
+
+    powertrain = classify(fuel_primary, fuel_secondary)
+    payload = {
+        # "vin":           raw["VIN"],
+        "make":          raw["Make"],
+        "model":         raw["Model"],
+        "modelYear":     raw["ModelYear"],
+        "powertrain":    powertrain,
+    }
+    return success_response(data=payload)
+
 
 @admin_bp.route("/vehicles/<string:sub>/create-vehicle", methods=["POST"])
 @cognito_auth_required(["Admin"])

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -7,7 +7,9 @@ import useCreateVehicleForm, {
     CreateVehicleMedia,
 } from "../../../hooks/useCreateVehicleForm";
 
-import { XMarkIcon } from "@heroicons/react/20/solid";
+import useDecodeVin from "../../../hooks/useDecodeVin";
+
+import { XMarkIcon, MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 
 import ErrorBanner from "../../ErrorBanner";
 import ErrorText from "../../ErrorText";
@@ -86,10 +88,10 @@ export const createVehicleSchema = z.object({
         .max(255, { message: "AuthenticatedView.Errors.exceeded_length" }),
 
     // ─── Vehicle Details ─────────────────────────────────────────────────────
-    vin: z
-        .string()
+    vin: z.string()
         .trim()
-        .max(17, { message: "AuthenticatedView.Errors.exceeded_length" }), // need to change to exactly 17
+        .toUpperCase()
+        .regex(/^[A-HJ-NPR-Z0-9]{17}$/, { message: "AuthenticatedView.Errors.invalid_vin" }),
 
     powertrain: z
         .string()
@@ -223,12 +225,46 @@ const CreateVehicleForm = ({ user, vehicleRefetch }: Props) => {
 
     const {
         register,
+        watch,
+        setValue,
         handleSubmit,
         formState: { errors },
     } = useForm({
         resolver: zodResolver(createVehicleSchema),
         defaultValues: { shippingStatus: "Auction" },
     });
+
+    // VIN DECODE LOGIC
+    const [vinState, setVinState] = useState<string>("");
+    const watched_vin = watch("vin")
+    useEffect(() => {
+        setVinState(watched_vin);
+        console.log(vinState)
+    }, [watched_vin])
+
+    const {decodeVin, decodedVin, isDecoding, decodeError} = useDecodeVin()
+
+    useEffect(() => {
+        const newPowertrain = decodedVin?.powertrain
+        if (newPowertrain) {
+            setValue('powertrain', newPowertrain, { shouldValidate: true });
+        }
+        const newModel = decodedVin?.model
+        if (newModel) {
+            setValue('model', newModel, { shouldValidate: true });
+        }
+
+        const newMake = decodedVin?.make
+        const newModelYear = decodedVin?.modelYear
+        if (newModel && newMake && newModelYear) {
+            setValue('vehicleName', `${newModelYear} ${newMake} ${newModel}`, { shouldValidate: true });
+        }
+
+    console.log(newPowertrain, newModel)
+
+    }, [decodedVin])
+
+
 
     return (
         <>
@@ -303,20 +339,33 @@ const CreateVehicleForm = ({ user, vehicleRefetch }: Props) => {
                     >
                         {t("AuthenticatedView.vin")}
                     </label>
-                    <div className="mt-2.5">
+
+                    <div className="flex w-full items-start gap-3 mt-2.5">
                         <input
                             id="vin"
-                            type="vin"
+                            type="text"
                             autoComplete="vin"
-                            className="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-primary"
+                            className="flex-1 min-w-0 rounded-md bg-white px-3.5 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-primary"
                             {...register("vin")}
                         />
-                        <ErrorText>
-                            {errors.vin && t(errors.vin.message as string)}
-                        </ErrorText>
-                    </div>
-                </div>
 
+                        <button
+                            type="button"
+                            onClick={async () => {await decodeVin(vinState)}}
+                            className="shrink-0 rounded-md bg-primary px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-primary-hover disabled:opacity-75 disabled:cursor-not-allowed"
+                            disabled={isDecoding}
+                        >
+                            <MagnifyingGlassIcon className="w-5"/>
+                        </button>
+                    </div>
+
+                    <ErrorText>
+                        {errors.vin && t(errors.vin.message as string)}
+                    </ErrorText>
+                    <ErrorText>
+                        {decodeError && t(decodeError as string)}
+                    </ErrorText>
+                </div>
                 <label className="block mt-4 mb-2 font-medium">
                     {t("AuthenticatedView.general_info")}
                 </label>
@@ -334,7 +383,7 @@ const CreateVehicleForm = ({ user, vehicleRefetch }: Props) => {
                                     id="vehicleName"
                                     type="vehicleName"
                                     autoComplete="vehicleName"
-                                    className="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-primary"
+                                    className={`block w-full rounded-md px-3.5 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-primary ${decodedVin?.make && decodedVin?.model && decodedVin?.modelYear && "bg-green-50"}`}
                                     {...register("vehicleName")}
                                 />
                                 <ErrorText>
@@ -521,7 +570,7 @@ const CreateVehicleForm = ({ user, vehicleRefetch }: Props) => {
                                     id="powertrain"
                                     type="powertrain"
                                     autoComplete="powertrain"
-                                    className="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-primary"
+                                    className={`block w-full rounded-md px-3.5 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-primary ${decodedVin?.powertrain && "bg-green-50"}`}
                                     {...register("powertrain")}
                                 />
                                 <ErrorText>
@@ -542,7 +591,7 @@ const CreateVehicleForm = ({ user, vehicleRefetch }: Props) => {
                                     id="model"
                                     type="model"
                                     autoComplete="model"
-                                    className="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-primary"
+                                    className={`block w-full rounded-md px-3.5 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-primary ${decodedVin?.model && "bg-green-50"}`}
                                     {...register("model")}
                                 />
                                 <ErrorText>
@@ -847,9 +896,7 @@ const CreateVehicleForm = ({ user, vehicleRefetch }: Props) => {
                 <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
                     <button
                         type="submit"
-                        onClick={() => {
-                            // closeCreateVehicle();
-                        }}
+                        // onClick={}
                         disabled={isCreateVehicleLoading}
                         className="inline-flex w-full justify-center rounded-md bg-primary px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-primary-hover disabled:opacity-75 disabled:cursor-not-allowed sm:ml-3 sm:w-auto"
                     >

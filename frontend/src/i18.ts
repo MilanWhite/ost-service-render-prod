@@ -382,6 +382,9 @@ i18n.use(LanguageDetector)
                             container_number_required:
                                 "Container number is required",
                             receiver_id_required: "Receiver ID is required",
+                            invalid_vin:
+                                "VIN must be 17 characters (I, O, Q not allowed)",
+                            
 
                             image_required: "At least one image upload is required",
 
@@ -407,6 +410,8 @@ i18n.use(LanguageDetector)
                                 "Failed to load dashboard. Please try again later.",
                             failed_to_delete_user:
                                 "Failed to delete user. Please try again later.",
+                            failed_to_decode_vin:
+                                "Failed to decode VIN. Please try again later.",
 
                             no_images_available: "No images available",
 
@@ -774,6 +779,7 @@ i18n.use(LanguageDetector)
                             container_number_required:
                                 "Номер контейнера обязателен",
                             receiver_id_required: "ID получателя обязателен",
+                            invalid_vin: "VIN должен содержать 17 символов (буквы I, O, Q недопустимы)",
 
                             image_required: "Необходимо загрузить как минимум одно изображение",
 
@@ -799,6 +805,8 @@ i18n.use(LanguageDetector)
                                 "Не удалось загрузить панель. Попробуйте позже.",
                             failed_to_delete_user:
                                 "Не удалось удалить пользователя. Пожалуйста, попробуйте позже.",
+                            failed_to_decode_vin: 
+                                "Не удалось расшифровать VIN. Пожалуйста, попробуйте позже.",
 
                             no_images_available: "Изображения недоступны",
 
@@ -1165,6 +1173,7 @@ i18n.use(LanguageDetector)
                                 "Номер контейнера є обов’язковим",
                             receiver_id_required:
                                 "ID одержувача є обов’язковим",
+                            invalid_vin: "VIN має складатися з 17 символів (букви I, O, Q не допускаються)",
 
                             image_required: "Потрібно завантажити принаймні одне зображення",
 
@@ -1190,6 +1199,8 @@ i18n.use(LanguageDetector)
                                 "Не вдалося завантажити панель. Спробуйте пізніше.",
                             failed_to_delete_user:
                                 "Не вдалося видалити користувача. Спробуйте пізніше.",
+                            failed_to_decode_vin: 
+                                "Не вдалося розпізнати VIN. Спробуйте пізніше.",
 
                             no_images_available: "Зображення недоступні",
 

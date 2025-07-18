@@ -44,3 +44,13 @@ export const LanguageFilterChoices = {
     ukrainian: "Ukrainian",
 
 }
+
+export interface DecodedVin {
+    modelYear: string;
+    make: string;
+
+    powertrain: string;
+    model: string;
+    
+    [key: string]: any;   // catch‑all for extra fields
+}
