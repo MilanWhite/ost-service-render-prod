@@ -11,7 +11,7 @@ const LandingBanner: React.FC = () => {
         >
             <div className="absolute inset-0 z-10 bg-gradient-to-r from-black via-primary-dark/75 lg:via-primary/30 to-primary/50 lg:to-transparent" />
 
-            <div className="relative z-10 text-white">
+            <div className="relative h-[65vh] lg:h-[70vh] z-10 text-white">
                 <LandingCTA />
             </div>
         </div>
