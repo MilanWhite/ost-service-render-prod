@@ -48,16 +48,19 @@ const Footer = () => {
 
                         return (
                             <a
-                                key={item.name}
+                                key={item.name || item.href}
                                 href={item.href}
                                 className="text-gray-600 hover:text-gray-800"
                                 target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label={item.name || "External link"}
                             >
-                                <span className="sr-only">{item.name}</span>
                                 <item.icon
                                     aria-hidden="true"
                                     className={sizeClass}
+                                    focusable="false"
                                 />
+                                <span className="sr-only">{item.name}</span>
                             </a>
                         );
                     })}
