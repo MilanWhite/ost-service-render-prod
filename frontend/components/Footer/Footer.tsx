@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 
 const navigation = [
     {
-        name: " ",
+        name: "Facebook",
         href: URLS.facebook,
         icon: (props: React.SVGProps<SVGSVGElement>) => (
             <svg fill="currentColor" viewBox="0 0 24 24" {...props}>
