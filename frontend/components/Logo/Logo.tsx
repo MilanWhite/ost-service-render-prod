@@ -7,7 +7,7 @@ interface Props {
 
 export const Logo = ({ height, to }: Props) => {
     return (
-        <Link to={to}>
+        <Link to={to} aria-label={"OST Service — Home"}>
             <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 779.57 350.77"
